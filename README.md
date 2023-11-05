@@ -65,7 +65,7 @@ Note, autocomplete works with a list of predefined snippets:
 
 ### Fenom Autocomplete: Variables
 
-- [Fenom system variable](Fenom Autocomplete: Variables)
+- [Fenom system variables](https://github.com/fenom-template/fenom/blob/master/docs/en/syntax.md#system-variable)
 - pdoTools [microMODX class](https://github.com/modx-pro/pdoTools/blob/master/core/components/pdotools/model/pdotools/_micromodx.php)
 - Local variables
 
