@@ -1,0 +1,150 @@
+{
+	"name": "vscode-modx",
+	"displayName": "IntelliSense for MODX",
+	"description": "Intelligent MODX, pdoTools and fenom tooling for VS Code",
+	"author": {
+		"name": "Gulomov Bakhtovar",
+		"email": "gulomovcreative@gmail.com",
+		"url": "https://codesolution.io"
+	},
+	"license": "MIT",
+	"version": "1.0.0",
+	"homepage": "https://github.com/GulomovCreative/vscode-modx",
+	"bugs": {
+		"url": "https://github.com/GulomovCreative/vscode-modx/issues",
+		"email": "gulomovcreative@gmail.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/GulomovCreative/vscode-modx.git"
+	},
+	"publisher": "gulomov",
+	"keywords": [
+		"modx",
+		"modxrevolution",
+		"modxcms",
+		"fenom",
+		"pdotools",
+		"minishop2",
+		"intellisense",
+		"autocomplete",
+		"vscode"
+	],
+	"engines": {
+		"vscode": "^1.81.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"galleryBanner": {
+		"color": "#2d3442",
+		"theme": "dark"
+	},
+	"icon": "media/modx.png",
+	"activationEvents": [
+		"onLanguage",
+		"onStartupFinished"
+	],
+	"main": "./out/extension",
+	"capabilities": {
+		"virtualWorkspaces": false
+	},
+	"l10n": "./l10n",
+	"contributes": {
+		"languages": [
+			{
+				"id": "modx",
+				"aliases": [
+					"MODX",
+					"modx"
+				],
+				"extensions": [
+					".tpl"
+				],
+				"configuration": "./languages/modx-configuration.json",
+				"icon": {
+					"light": "media/modx.png",
+					"dark": "media/modx.png"
+				}
+			},
+			{
+				"id": "fenom",
+				"aliases": [
+					"Fenom",
+					"fenom"
+				],
+				"extensions": [
+					".tpl"
+				],
+				"configuration": "./languages/fenom-configuration.json",
+				"icon": {
+					"light": "media/fenom.png",
+					"dark": "media/fenom.png"
+				}
+			}
+		],
+		"grammars": [
+			{
+				"language": "modx",
+				"scopeName": "text.html.modx",
+				"path": "./node_modules/modx-tmlanguage/modx.tmLanguage.json",
+				"embeddedLanguages": {
+					"source.modx": "modx",
+					"text.html.derivative": "html",
+					"source.js": "javascript",
+					"source.css": "css"
+				}
+			},
+			{
+				"language": "fenom",
+				"scopeName": "text.html.fenom",
+				"path": "./node_modules/fenom-tmlanguage/fenom.tmLanguage.json",
+				"embeddedLanguages": {
+					"source.fenom": "fenom",
+					"text.html.derivative": "html",
+					"source.js": "javascript",
+					"source.css": "css"
+				}
+			}
+		],
+		"configuration": {
+			"title": "MODX IntelliSense",
+			"properties": {
+				"vscode-modx.elementsPath": {
+					"type": "string",
+					"default": "/core/elements/",
+					"description": "%vscode-modx.elementsPath.description%"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run build",
+		"build": "tsc -p ./",
+		"package": "vsce package",
+		"publish": "vsce publish",
+		"lint": "eslint \"src/**/*.ts\"",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/json5": "^2.2.0",
+		"@types/lodash": "^4.14.199",
+		"@types/node": "^16.18.34",
+		"@types/vscode": "^1.73.0",
+		"@typescript-eslint/eslint-plugin": "^5.42.0",
+		"@typescript-eslint/parser": "^5.42.0",
+		"@vscode/l10n-dev": "^0.0.29",
+		"eslint": "^8.26.0",
+		"typescript": "^5.1.3"
+	},
+	"dependencies": {
+		"@vscode/l10n": "^0.0.16",
+		"fenom-tmlanguage": "^1.0.0",
+		"json5": "^2.2.3",
+		"lodash": "^4.17.21",
+		"modx-tmlanguage": "^1.2.0"
+	},
+	"vsce": {
+		"dependencies": false
+	}
+}
