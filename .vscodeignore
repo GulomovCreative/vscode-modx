@@ -3,3 +3,4 @@ src/**
 **/*.map
 .gitignore
 **/tsconfig.json
+node_modules
