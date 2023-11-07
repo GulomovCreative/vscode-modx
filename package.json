@@ -143,8 +143,5 @@
 		"json5": "^2.2.3",
 		"lodash": "^4.17.21",
 		"modx-tmlanguage": "^1.2.0"
-	},
-	"vsce": {
-		"dependencies": false
 	}
 }
