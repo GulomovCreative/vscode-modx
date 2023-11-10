@@ -55,7 +55,7 @@ export class ModxCompletionProvider extends MainCompletionProvider {
         diff++;
       }
 
-      if (diff === 0 && match.index) {
+      if (diff === 0 && typeof match.index !== 'undefined') {
         body = textBefore.substring(match.index);
         break;
       }
@@ -78,7 +78,7 @@ export class ModxCompletionProvider extends MainCompletionProvider {
         diff++;
       }
 
-      if (diff === 0 && match.index) {
+      if (diff === 0 && typeof match.index !== 'undefined') {
         body = textAfter.substring(0, match.index + 2);
         break;
       }
