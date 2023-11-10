@@ -1,7 +1,7 @@
 import { SnippetProp } from './schemas/snippets/';
 
-export const MODX_SELECTOR = { language: 'modx', scheme: 'file' };
-export const FENOM_SELECTOR = { language: 'fenom', scheme: 'file' };
+export const MODX_SELECTOR = { language: 'modx' };
+export const FENOM_SELECTOR = { language: 'fenom' };
 export const SELECTORS = [MODX_SELECTOR, FENOM_SELECTOR];
 
 export const RETRIGGER_COMMAND = { command: 'editor.action.triggerSuggest', title: 'Re-trigger completions...' };
