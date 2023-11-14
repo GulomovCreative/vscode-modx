@@ -59,7 +59,8 @@
 					"modx"
 				],
 				"extensions": [
-					".tpl"
+					".tpl",
+					".html"
 				],
 				"configuration": "./languages/modx-configuration.json",
 				"icon": {
@@ -74,7 +75,8 @@
 					"fenom"
 				],
 				"extensions": [
-					".tpl"
+					".tpl",
+					".html"
 				],
 				"configuration": "./languages/fenom-configuration.json",
 				"icon": {
@@ -87,24 +89,12 @@
 			{
 				"language": "modx",
 				"scopeName": "text.html.modx",
-				"path": "./languages/modx.tmLanguage.json",
-				"embeddedLanguages": {
-					"source.modx": "modx",
-					"text.html.derivative": "html",
-					"source.js": "javascript",
-					"source.css": "css"
-				}
+				"path": "./languages/modx.tmLanguage.json"
 			},
 			{
 				"language": "fenom",
 				"scopeName": "text.html.fenom",
-				"path": "./languages/fenom.tmLanguage.json",
-				"embeddedLanguages": {
-					"source.fenom": "fenom",
-					"text.html.derivative": "html",
-					"source.js": "javascript",
-					"source.css": "css"
-				}
+				"path": "./languages/fenom.tmLanguage.json"
 			}
 		],
 		"configuration": {
@@ -116,7 +106,17 @@
 					"description": "%vscode-modx.elementsPath.description%"
 				}
 			}
-		}
+		},
+		"htmlLanguageParticipants": [
+			{
+				"languageId": "modx",
+				"autoInsert": true
+			},
+			{
+				"languageId": "fenom",
+				"autoInsert": true
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run esbuild-base -- --minify",
