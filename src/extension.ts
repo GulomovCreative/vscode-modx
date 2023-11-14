@@ -1,4 +1,4 @@
-import { type ExtensionContext } from 'vscode';
+import { type ExtensionContext, extensions, window } from 'vscode';
 import './localize';
 
 import { modxSnippetCompletionDisposable, modxSnippetPropCompletionDisposable } from './providers/modx/snippet';
@@ -16,7 +16,7 @@ import { fenomModifierCompletionDisposable, fenomConfigModifierCompletionDisposa
 import { fenomSnippetModifierCompletionDisposable, fenomSnippetMethodCompletionDisposable, fenomSnippetPropCompletionDisposable } from './providers/fenom/snippet';
 import fenomArgumentCompletionDisposable from './providers/fenom/argument';
 
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     modxModifierCompletionDisposable,
     modxSnippetCompletionDisposable,
@@ -42,4 +42,18 @@ export function activate(context: ExtensionContext) {
     fileLocationDisposable,
     fileCompletionDisposable,
   );
+
+  const htmlExtension = extensions.getExtension('vscode.html-language-features');
+
+  if (!htmlExtension) {
+    const output = window.createOutputChannel('vscode-modx');
+
+    output.appendLine(
+      'Warning: Could not find vscode.html-language-features.',
+    );
+
+    return;
+  }
+
+  await htmlExtension?.activate();
 }
