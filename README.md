@@ -96,6 +96,42 @@ Use the `files.associations` setting to tell VS Code to always open .tpl files i
 
 ```json
 "files.associations": {
-  "*.tpl": "modx | fenom",
+  "*.tpl": "modx",
+  // or
+  "*.tpl": "fenom",
+}
+```
+
+## Troubleshooting
+
+### Problem: Emmet expand abbreviation doesn't work
+
+Check the VSCode settings, note the `emmet.includeLanguages`, you need to add the following value:
+
+```json
+{
+  "emmet.includeLanguages": {
+    // ...
+    "modx": "html",
+    "fenom": "html"
+  }
+}
+```
+
+### Problem: TailwindCSS intellisense doesn't work
+
+Add to your user/project/folder settings following value and make sure the `editor.quickSuggestions.strings` setting is enabled:
+
+```json
+{
+  "tailwindCSS.includeLanguages": {
+    // ...
+    "modx": "html",
+    "fenom": "html"
+  },
+  "editor.quickSuggestions": {
+    // ...
+    "strings": true
+  }
 }
 ```
