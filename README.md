@@ -2,6 +2,8 @@
 
 Intelligent MODX, pdoTools and fenom tooling for VS Code.
 
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx?ref=badge_shield)
+
 ![Intellisense for MODX Revolution and Fenom](.github/banner.png)
 
 ## Installation
@@ -18,7 +20,6 @@ Or [install via the Visual Studio Code Marketplace](https://marketplace.visualst
 ### MODX Syntax Highlighting
 
 ![MODX Syntax Highlighting](media/modx-syntax.png)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx?ref=badge_shield)
 
 ### MODX Autocomplete: Default Resource Content Field Tags
 
@@ -139,4 +140,5 @@ Add to your user/project/folder settings following value and make sure the `edit
 
 
 ## License
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx?ref=badge_large)
