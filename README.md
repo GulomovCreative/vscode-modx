@@ -2,8 +2,6 @@
 
 Intelligent MODX, pdoTools and fenom tooling for VS Code.
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx?ref=badge_shield)
-
 ![Intellisense for MODX Revolution and Fenom](.github/banner.png)
 
 ## Installation
@@ -137,7 +135,6 @@ Add to your user/project/folder settings following value and make sure the `edit
   }
 }
 ```
-
 
 ## License
 
