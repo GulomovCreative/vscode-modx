@@ -47,7 +47,10 @@
 	],
 	"main": "./out/extension.js",
 	"capabilities": {
-		"virtualWorkspaces": false
+		"virtualWorkspaces": {
+			"supported": "limited",
+			"description": "In virtual workspaces, resolving and finding references across files is not supported."
+		}
 	},
 	"l10n": "./l10n",
 	"contributes": {
