@@ -5,6 +5,7 @@ import { modxSnippetCompletionDisposable, modxSnippetPropCompletionDisposable } 
 import modxModifierCompletionDisposable from './providers/modx/modifier';
 import modxPlaceholderCompletionDisposable from './providers/modx/placeholder';
 import modxSettingCompletionDisposable from './providers/modx/setting';
+import modxFastFieldCompletionDisposable from './providers/modx/fastfield';
 import modxChunkCompletionDisposable from './providers/modx/chunk';
 
 import fileCompletionDisposable from './providers/file/autocomplete';
@@ -23,6 +24,7 @@ export async function activate(context: ExtensionContext) {
     modxSnippetPropCompletionDisposable,
     modxPlaceholderCompletionDisposable,
     modxSettingCompletionDisposable,
+    modxFastFieldCompletionDisposable,
     modxChunkCompletionDisposable,
 
     fenomTagCompletionDisposable,
