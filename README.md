@@ -58,7 +58,7 @@ Note, autocomplete works with a list of predefined snippets:
 
 ### Fenom Autocomplete: Block names
 
-Suggests names from `{block '…'}` in the current file and in templates linked via `{extends}` / `{use}`, when typing inside `{paste '…'}`, `{block '…'}`, or `{$.block.…}`.
+Suggests names from `{block '…'}` in the current file and in templates linked via `{extends}` / `{use}`, when typing inside `{paste '…'}`, `{block '…'}`, or `{$.block.…}`. The `{block}` tag itself is also suggested without a prior `{extends}` (parent templates).
 
 ### Fenom Autocomplete: Modifiers
 
