@@ -1,4 +1,5 @@
 import { DefinitionProvider, TextDocument, Position, LocationLink, Uri, Range, languages } from 'vscode';
+import { join } from 'node:path';
 import { createContext, getElementsPath } from './autocomplete';
 import { SELECTORS } from '../../common';
 
@@ -14,7 +15,7 @@ class FileDefinitionProvider implements DefinitionProvider {
     }
 
     const elementsPath = getElementsPath(document);
-    const targetUri = Uri.file(elementsPath + input);
+    const targetUri = Uri.file(join(elementsPath, input.replace(/^[/\\]+/, '')));
 
     const file: LocationLink = {
       originSelectionRange: inputRange,
