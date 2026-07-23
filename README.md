@@ -56,6 +56,10 @@ Note, autocomplete works with a list of predefined snippets:
 
 ![Fenom Autocomplete: Tags](media/fenom-autocomplete-tags.png)
 
+### Fenom Autocomplete: Block names
+
+Suggests names from `{block '…'}` in the current file and in templates linked via `{extends}` / `{use}`, when typing inside `{paste '…'}`, `{block '…'}`, or `{$.block.…}`.
+
 ### Fenom Autocomplete: Modifiers
 
 - [Built In modifiers](https://github.com/fenom-template/fenom/tree/master/docs/en#modifiers)
