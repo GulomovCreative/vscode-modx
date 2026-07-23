@@ -61,7 +61,7 @@ export const tags: Tag[] = [
   },
   {
     name: 'continue',
-    parentTags: ['continue'],
+    parentTags: ['foreach'],
   },
   {
     name: 'switch',
