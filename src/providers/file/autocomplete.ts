@@ -12,7 +12,7 @@ import {
   languages,
 } from 'vscode';
 
-import { normalize, join } from 'node:path';
+import { join } from 'node:path';
 import { MainCompletionProvider } from '../autocomplete';
 import { SELECTORS, RETRIGGER_COMMAND } from '../../common';
 
@@ -103,11 +103,11 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
 
   getPath(input: string): string {
     const elementsPath = getElementsPath(this.context.document);
-    const pathArr = input.split('/') || [''];
+    const pathArr = input.replace(/^[/\\]+/, '').split('/');
     pathArr.pop();
-    const string = pathArr.join('/');
+    const relative = pathArr.join('/');
 
-    return join(elementsPath, string);
+    return relative ? join(elementsPath, relative) : elementsPath;
   }
 
   get isSnippetCall(): boolean {
@@ -128,15 +128,19 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
 
 export function getElementsPath(document: TextDocument): string {
   const config = workspace.getConfiguration('vscode-modx');
-  const elementsPath = config.get<string>('elementsPath');
-
+  const elementsPath = config.get<string>('elementsPath')?.trim() ?? '';
   const workspaceFolder = workspace.getWorkspaceFolder(document.uri);
-  let path = workspaceFolder?.uri.fsPath || '';
-  if (elementsPath) {
-    path += normalize(elementsPath);
+  const root = workspaceFolder?.uri.fsPath || '';
+
+  // Empty, "/", or "." means the workspace / project root.
+  if (!elementsPath || elementsPath === '/' || elementsPath === '.') {
+    return root;
   }
 
-  return path;
+  // elementsPath is configured with a leading slash (default: /core/elements/).
+  // Use join with a relative segment so an absolute second argument does not
+  // discard the workspace root on POSIX.
+  return join(root, elementsPath.replace(/^[/\\]+/, ''));
 }
 
 export function createContext(
@@ -150,20 +154,23 @@ export function createContext(
 
   switch (document.languageId) {
     case 'modx':
-      re = '`(@FILE )([^/.][\\w./?]*)?`';
+      // Allow empty path and leading "/" so users can browse from the elements/project root.
+      re = '`(@FILE )([\\w./?]*)?`';
       break;
     case 'fenom':
-      re = '[\'"](@FILE |file:)([^/.][\\w./]*)?[\'"]';
+      re = '[\'"](@FILE |file:)([\\w./]*)?[\'"]';
       break;
   }
 
   const [ , include = '', input = '' ] = textFullLine.match(re) || [];
   const isInclude = !/\/{2,}/.test(input) && !!include && /^[\w./]*['"`]/.test(textAfter);
-  const inputPosition = textFullLine.lastIndexOf(input);
+  const inputPosition = input
+    ? textFullLine.lastIndexOf(input)
+    : textFullLine.lastIndexOf(include) + include.length;
 
   const inputRange = new Range(
-    new Position(position.line, inputPosition),
-    new Position(position.line, inputPosition + input.length)
+    new Position(position.line, Math.max(inputPosition, 0)),
+    new Position(position.line, Math.max(inputPosition, 0) + input.length)
   );
 
   return {
