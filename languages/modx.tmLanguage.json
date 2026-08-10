@@ -6,7 +6,7 @@
     "html"
   ],
   "injections": {
-    "L:text.html.modx": {
+    "L:text.html.modx -comment.modx": {
       "patterns": [
         {
           "include": "#interpolation"
@@ -131,7 +131,7 @@
           "begin": "\\[\\[\\-\\s?",
           "name": "comment.modx",
           "contentName": "comment.modx",
-          "end": "\\]\\]$"
+          "end": "\\]\\]"
         }
       ]
     },
