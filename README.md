@@ -27,6 +27,14 @@ Or [install via the Visual Studio Code Marketplace](https://marketplace.visualst
 
 ![MODX Autocomplete: System settings](media/modx-autocomplete-settings.png)
 
+### MODX Autocomplete: fastField tags
+
+Suggests [fastField](https://docs.modx.com/current/en/extras/fastfield) / [pdoParser](https://docs.modx.com/3.x/en/extras/pdoTools/Parser) tags after `#`:
+
+- Resource fields: `[[#15.pagetitle]]`
+- TV and properties prefixes: `[[#15.tv.name]]`, `[[#15.properties.key]]`
+- PHP superglobals: `[[!#GET.key]]`, `POST`, `REQUEST`, `SERVER`, `FILES`, `COOKIE`, `SESSION`
+
 ### MODX Autocomplete: Output filters/modifiers
 
 ![MODX Autocomplete: Output filters/modifiers](media/modx-autocomplete-modifiers.png)
