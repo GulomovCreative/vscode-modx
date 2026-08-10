@@ -578,6 +578,7 @@
 	"fenom.tag.use": "Import the blocks defined in another file. Specifying blocks in this template will override those from the other file.",
 	"fenom.tag.parent": "Uses the code from the block as defined in the parent.",
 	"fenom.tag.paste": "Pastes the code of any block.",
+	"fenom.block.name": "Name of a `{block}` defined in the current template or in templates linked via `{extends}` / `{use}`.",
 	"fenom.tag.filter": "Apply modifier to template area.",
 	"fenom.tag.ignore": "`{ignore}` tags allow a block of data to be taken literally. This is typically used around Javascript or stylesheet blocks where `{curly braces}` would interfere with the template delimiter syntax. Anything within `{ignore}{/ignore}` tags is not interpreted, but displayed as-is.",
 	"fenom.tag.macro": "Macros are comparable with functions in regular programming languages. They are useful to put often used HTML idioms into reusable elements to not repeat yourself.",

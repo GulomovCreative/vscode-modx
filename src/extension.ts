@@ -16,6 +16,7 @@ import fenomVariablesCompletionDisposable from './providers/fenom/variable';
 import { fenomModifierCompletionDisposable, fenomConfigModifierCompletionDisposable } from './providers/fenom/modifier';
 import { fenomSnippetModifierCompletionDisposable, fenomSnippetMethodCompletionDisposable, fenomSnippetPropCompletionDisposable } from './providers/fenom/snippet';
 import fenomArgumentCompletionDisposable from './providers/fenom/argument';
+import fenomBlockNameCompletionDisposable from './providers/fenom/block';
 
 export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
@@ -31,6 +32,7 @@ export async function activate(context: ExtensionContext) {
     fenomTagCloseCompletionDisposable,
     fenomTagArgumentCompletionDisposable,
     fenomTagOptionCompletionDisposable,
+    fenomBlockNameCompletionDisposable,
 
     fenomModifierCompletionDisposable,
     fenomConfigModifierCompletionDisposable,

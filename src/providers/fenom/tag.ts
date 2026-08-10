@@ -197,10 +197,6 @@ class FenomTagCompletion extends FenomCompletionProvider implements CompletionIt
         return filtered;
       }
 
-      if (tag.name === 'block' && !hasExtendsBefore) {
-        return filtered;
-      }
-
       if (tag.name === 'extends' && hasExtendsBefore) {
         return filtered;
       }
