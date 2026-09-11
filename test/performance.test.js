@@ -1,6 +1,6 @@
 const { test, describe, before, beforeEach } = require('node:test');
 const assert = require('node:assert/strict');
-const { getProvider, complete, labels, documentWithCursor, editDocument, vscode } = require('./helpers');
+const { getProvider, labels, documentWithCursor, editDocument, vscode } = require('./helpers');
 
 const { FileType } = vscode;
 const ROOT = '/project';

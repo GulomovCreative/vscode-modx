@@ -366,8 +366,8 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
 
   collectLocalVariables(): Variable[] {
     const before = this.getBefore();
-    const matches = [...before.matchAll(/{(set|add|var)\s*(\$[a-zA-Z_]+[a-zA-Z0-9_]+)\s*=\s*([^'"}]*(("[^"]*"|'[^']*')[^'"}]*)*)}/gm)] || [];
-    const unsettedMatches = [...before.matchAll(/(?<!{\*\s*){unset\s*(\$[\w $]*)(?=})/g)] || [];
+    const matches = [...before.matchAll(/{(set|add|var)\s*(\$[a-zA-Z_]+[a-zA-Z0-9_]+)\s*=\s*([^'"}]*(("[^"]*"|'[^']*')[^'"}]*)*)}/gm)];
+    const unsettedMatches = [...before.matchAll(/(?<!{\*\s*){unset\s*(\$[\w $]*)(?=})/g)];
     const unsetted = unsettedMatches
         .reduce((result, [ , match ]) => {
           match.replace(/\s+/g, ' ').trim().split(' ').forEach((item) => result.push(item));

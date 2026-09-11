@@ -18,7 +18,7 @@ export type ParsedTag = {
 export class FenomCompletionProvider extends MainCompletionProvider {
   getParentTags(): ParsedTag[] {
     const before = this.getBefore();
-    const matches = [...before.matchAll(/{(\/?[a-z]+)\s?([^{}]*)}/g)] || [];
+    const matches = [...before.matchAll(/{(\/?[a-z]+)\s?([^{}]*)}/g)];
     const parsedTags = matches.map(([ body, name, args ]) => ({ name, args, body }));
     const pairedTags = parsedTags.reduce((result, tag) => {
       if (tag.name.startsWith('/')) {
@@ -115,7 +115,7 @@ export class FenomCompletionProvider extends MainCompletionProvider {
     let { before, after } = body;
     let diff = 0;
 
-    const calls = [...before.matchAll(/\$_modx->runSnippet\(['"]!?[\w@]+['"],\s*\[|['"]!?[\w@]+['"]\s*\|\s*snippet\s*:\s*\[/g)] || [];
+    const calls = [...before.matchAll(/\$_modx->runSnippet\(['"]!?[\w@]+['"],\s*\[|['"]!?[\w@]+['"]\s*\|\s*snippet\s*:\s*\[/g)];
     const lastCall = calls.at(-1);
 
     if (!lastCall) {
@@ -139,7 +139,7 @@ export class FenomCompletionProvider extends MainCompletionProvider {
     }
 
     after: {
-      const squares = [...after.matchAll(/\[|\]/g)] || [];
+      const squares = [...after.matchAll(/\[|\]/g)];
       for (const match of squares) {
         if (match[0] === '[') {
           diff++;

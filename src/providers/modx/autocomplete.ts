@@ -69,7 +69,7 @@ export class ModxCompletionProvider extends MainCompletionProvider {
     let body = '';
 
     let diff = -1;
-    const matches = [...textAfter.matchAll(/(\[{2}(?!-))|(\]{2})/g)] || [];
+    const matches = [...textAfter.matchAll(/(\[{2}(?!-))|(\]{2})/g)];
 
     for (const match of matches) {
       if (match[0] === '[[') {
