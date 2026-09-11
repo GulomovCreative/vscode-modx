@@ -1,0 +1,119 @@
+const { test, describe, before, beforeEach } = require('node:test');
+const assert = require('node:assert/strict');
+const { getProvider, complete, labels, documentWithCursor, vscode } = require('./helpers');
+
+const ROOT = '/project';
+const { FileType } = vscode;
+
+// Дерево проекта, которое видит стаб workspace.fs.
+function tree(elementsPath) {
+  const files = new Map([
+    [ROOT, { type: FileType.Directory, children: [['core', FileType.Directory]] }],
+    [`${ROOT}/core`, { type: FileType.Directory, children: [['elements', FileType.Directory]] }],
+    [`${ROOT}/core/elements`, {
+      type: FileType.Directory,
+      children: [
+        ['chunks', FileType.Directory],
+        ['snippets', FileType.Directory],
+        ['base.tpl', FileType.File],
+        ['.hidden.tpl', FileType.File],
+        ['readme.md', FileType.File],
+      ],
+    }],
+    [`${ROOT}/core/elements/chunks`, {
+      type: FileType.Directory,
+      children: [['item.tpl', FileType.File], ['card.html', FileType.File]],
+    }],
+    [`${ROOT}/core/elements/snippets`, {
+      type: FileType.Directory,
+      children: [['getData.php', FileType.File], ['notes.txt', FileType.File]],
+    }],
+    [`${ROOT}/core/elements/base.tpl`, { type: FileType.File, content: "{block 'header'}{/block}" }],
+    [`${ROOT}/core/elements/.hidden.tpl`, { type: FileType.File, content: '' }],
+    [`${ROOT}/core/elements/readme.md`, { type: FileType.File, content: '' }],
+    [`${ROOT}/core/elements/chunks/item.tpl`, { type: FileType.File, content: '' }],
+    [`${ROOT}/core/elements/chunks/card.html`, { type: FileType.File, content: '' }],
+    [`${ROOT}/core/elements/snippets/getData.php`, { type: FileType.File, content: '' }],
+    [`${ROOT}/core/elements/snippets/notes.txt`, { type: FileType.File, content: '' }],
+  ]);
+
+  return {
+    files,
+    folder: { uri: vscode.Uri.file(ROOT), name: 'project', index: 0 },
+    configuration: { 'vscode-modx': { elementsPath } },
+  };
+}
+
+describe('@FILE: пути к файлам', () => {
+  let completion;
+  let definition;
+
+  before(async () => {
+    completion = await getProvider({ language: 'modx', triggerCharacters: [':', '/'] });
+    definition = await getProvider({ language: 'modx', kind: 'definition' });
+  });
+
+  beforeEach(() => vscode.setWorkspace(tree('/core/elements/')));
+
+  test('в корне elements предлагаются шаблоны и каталоги', async () => {
+    const items = labels(await complete(completion, '[[$chunk? &tpl=`@FILE ‸`]]', 'modx'));
+
+    assert.ok(items.includes('base.tpl'), 'ожидался base.tpl');
+    assert.ok(items.includes('chunks'), 'ожидался каталог chunks');
+  });
+
+  test('файлы с посторонним расширением отсеиваются', async () => {
+    const items = labels(await complete(completion, '[[$chunk? &tpl=`@FILE ‸`]]', 'modx'));
+
+    assert.ok(!items.includes('readme.md'), 'md не является шаблоном');
+  });
+
+  test('скрытые файлы не предлагаются', async () => {
+    const items = labels(await complete(completion, '[[$chunk? &tpl=`@FILE ‸`]]', 'modx'));
+
+    assert.ok(!items.includes('.hidden.tpl'), 'файлы с точки скрыты');
+  });
+
+  test('вложенный каталог раскрывается', async () => {
+    const items = labels(await complete(completion, '[[$chunk? &tpl=`@FILE chunks/‸`]]', 'modx'));
+
+    assert.deepEqual(items.sort(), ['card.html', 'item.tpl']);
+  });
+
+  test('каталог вставляется со слэшем и просит новые подсказки', async () => {
+    const [folder] = (await complete(completion, '[[$chunk? &tpl=`@FILE ‸`]]', 'modx'))
+      .filter((item) => item.label === 'chunks');
+
+    assert.equal(folder.insertText, 'chunks/');
+    assert.equal(folder.command?.command, 'editor.action.triggerSuggest');
+  });
+
+  test('elementsPath = / берёт файлы от корня проекта', async () => {
+    vscode.setWorkspace(tree('/'));
+    const items = labels(await complete(completion, '[[$chunk? &tpl=`@FILE ‸`]]', 'modx'));
+
+    assert.deepEqual(items, ['core'], 'от корня проекта виден только каталог core');
+  });
+
+  test('пустой elementsPath равнозначен корню проекта', async () => {
+    vscode.setWorkspace(tree(''));
+    const items = labels(await complete(completion, '[[$chunk? &tpl=`@FILE ‸`]]', 'modx'));
+
+    assert.deepEqual(items, ['core']);
+  });
+
+  describe('переход к файлу', () => {
+    test('ведёт на путь внутри elementsPath', () => {
+      const { document, position } = documentWithCursor('[[$chunk? &tpl=`@FILE chunks/item.tpl‸`]]', 'modx');
+      const [link] = definition.provideDefinition(document, position);
+
+      assert.equal(link.targetUri.fsPath, `${ROOT}/core/elements/chunks/item.tpl`);
+    });
+
+    test('вне биндинга перехода нет', () => {
+      const { document, position } = documentWithCursor('<div>просто текст‸</div>', 'modx');
+
+      assert.deepEqual(definition.provideDefinition(document, position), []);
+    });
+  });
+});

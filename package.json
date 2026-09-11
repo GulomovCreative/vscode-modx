@@ -130,7 +130,8 @@
 		"package": "vsce package",
 		"publish": "vsce publish",
 		"lint": "eslint \"src/**/*.ts\"",
-		"watch": "tsc -watch -p ./"
+		"watch": "tsc -watch -p ./",
+		"test": "node --test \"test/*.test.js\""
 	},
 	"devDependencies": {
 		"@types/json5": "^2.2.0",
