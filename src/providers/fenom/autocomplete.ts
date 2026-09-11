@@ -20,12 +20,16 @@ export class FenomCompletionProvider extends MainCompletionProvider {
     const parsedTags = matches.map(([ body, name, args ]) => ({ name, args, body }));
     const pairedTags = parsedTags.reduce((result, tag) => {
       if (tag.name.startsWith('/')) {
-        const index = result.reverse().findIndex(item => item.name === tag.name.replace(/^\//, ''));
+        const openedName = tag.name.slice(1);
 
-        if (index !== -1) {
-          result.splice(index, 1);
-          return result.reverse();
+        for (let index = result.length - 1; index >= 0; index--) {
+          if (result[index].name === openedName) {
+            result.splice(index, 1);
+            break;
+          }
         }
+
+        return result;
       }
 
       if (
