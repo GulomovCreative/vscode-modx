@@ -7,3 +7,4 @@ src/**
 eslint.config.js
 node_modules
 test/**
+scripts/**

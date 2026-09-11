@@ -6,7 +6,7 @@
     "html"
   ],
   "injections": {
-    "L:text.html.modx -comment.modx": {
+    "L:text.html.modx": {
       "patterns": [
         {
           "include": "#interpolation"
@@ -41,7 +41,7 @@
       ]
     },
     "main": {
-      "begin": "(\\[\\[)(!?)([\\x{0023}\\x{0025}\\x{002a}\\x{007e}\\$]?\\+{0,2})([-_a-zA-Z0-9\\.]*)",
+      "begin": "(\\[\\[)(!?)([\\x{0025}\\x{002a}\\x{007e}\\$]?\\+{0,2})([-_a-zA-Z0-9\\.]*)",
       "beginCaptures": {
         "1": {
           "name": "punctuation.definition.tag.begin.modx"
@@ -131,7 +131,7 @@
           "begin": "\\[\\[\\-\\s?",
           "name": "comment.modx",
           "contentName": "comment.modx",
-          "end": "\\]\\]"
+          "end": "\\]\\]$"
         }
       ]
     },
