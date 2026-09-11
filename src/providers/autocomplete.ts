@@ -10,6 +10,11 @@ export interface Context {
 }
 
 export class MainCompletionProvider {
+  // Провайдер регистрируется одним экземпляром на всё расширение, поэтому поле
+  // разделяется между запросами. Для синхронного provideCompletionItems это
+  // безопасно — между разбором контекста и возвратом ничего не выполняется.
+  // Асинхронный провайдер обязан работать с контекстом, который вернул
+  // createContext(), и не читать это поле после первого await.
   public context: Context;
 
   getBefore(): string {
@@ -29,7 +34,7 @@ export class MainCompletionProvider {
   createContext(
     position: Position,
     document: TextDocument,
-  ) {
+  ): Context {
     const textFullLine = document.lineAt(position.line).text;
     const wordRange = document.getWordRangeAtPosition(position) || new Range(position, position);
     const textBefore = textFullLine.substring(0, wordRange?.start.character || position.character);
@@ -43,5 +48,7 @@ export class MainCompletionProvider {
       position,
       document,
     };
+
+    return this.context;
   }
 }

@@ -171,7 +171,10 @@ const methods: Variable[] = [
   },
 ].map(data => ({ ...data, description: t(`var.$_modx.method.${data.name}`) }));
 
-let map: Variable[] = [
+// Базовый список неизменяем. Локальные переменные документа добавляются
+// поверх него на время одного запроса: экземпляр провайдера один на всё
+// расширение, и правка общего списка утекала бы между документами.
+const rootVariables: Variable[] = [
   {
     name: '$_modx',
     type: 'object',
@@ -284,18 +287,18 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
       return [];
     }
 
-    this.prepareLocaleVariables();
+    const scope = [ ...rootVariables, ...this.collectLocalVariables() ];
 
-    return this.getCompletionItems();
+    return this.getCompletionItems(scope);
   }
 
-  getCompletionItems(): CompletionItem[] {
+  getCompletionItems(scope: Variable[]): CompletionItem[] {
     const { textBefore } = this.context;
 
     let [ match ] = textBefore.match(/\$[\w.[\]'"\->]*$/) || [];
     match = match?.replace(/\[['"]$/, '.');
     const path = this.parsePath(match);
-    const items = this.getItems([...path]);
+    const items = this.getItems([...path], scope);
 
     return items.map((variable, index) => this.createCompletionItem(variable, index));
   }
@@ -361,7 +364,7 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
     return item;
   }
 
-  prepareLocaleVariables() {
+  collectLocalVariables(): Variable[] {
     const before = this.getBefore();
     const matches = [...before.matchAll(/{(set|add|var)\s*(\$[a-zA-Z_]+[a-zA-Z0-9_]+)\s*=\s*([^'"}]*(("[^"]*"|'[^']*')[^'"}]*)*)}/gm)] || [];
     const unsettedMatches = [...before.matchAll(/(?<!{\*\s*){unset\s*(\$[\w $]*)(?=})/g)] || [];
@@ -382,7 +385,7 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
             kind: CompletionItemKind.Variable
           };
           const path = this.parsePath(value + '.');
-          const items = this.getItems(path);
+          const items = this.getItems(path, rootVariables);
 
           if (items) {
             data.items = items;
@@ -391,8 +394,6 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
           return data;
         })
         .filter((variable) => !unsetted.includes(variable.name));
-
-    map = map.filter(item => item.type !== 'local');
 
     const tags = this.getParentTags();
 
@@ -444,7 +445,7 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
       }
     }
 
-    map.push(...variables);
+    return variables;
   }
 
   shouldProvide(): boolean {
@@ -477,17 +478,17 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
     return output;
   }
 
-  getItems(path: PathSegment[]): Variable[] {
+  getItems(path: PathSegment[], scope: Variable[]): Variable[] {
     if (!path) {
       return [];
     }
 
     if (path.length === 1) {
-      return map;
+      return scope;
     }
 
     path.pop();
-    const items = this.findItems(path, map);
+    const items = this.findItems(path, scope);
 
     return items;
   }

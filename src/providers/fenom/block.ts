@@ -15,6 +15,7 @@ import { t } from '@vscode/l10n';
 
 import { FENOM_SELECTOR, getSortText } from '../../common';
 import { FenomCompletionProvider } from './autocomplete';
+import { type Context } from '../autocomplete';
 import { getElementsPath } from '../file/autocomplete';
 
 const BLOCK_NAME_PATTERN = /\{block\s+['"]([^'"]+)['"]/g;
@@ -26,9 +27,11 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
     document: TextDocument,
     position: Position,
   ) {
-    this.createContext(position, document);
+    // Разбор контекста целиком до первого await: экземпляр провайдера один на
+    // всё расширение, и поле this.context переживёт ожидание не своим.
+    const context = this.createContext(position, document);
 
-    if (!this.shouldProvide()) {
+    if (!this.shouldProvide(context)) {
       return [];
     }
 
@@ -37,13 +40,13 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
     return [...names].map((name, index) => this.createCompletionItem(name, index));
   }
 
-  shouldProvide(): boolean {
+  shouldProvide(context: Context): boolean {
     const body = this.getBody();
-    const textBefore = body ? body.before : this.context.textBefore;
+    const textBefore = body ? body.before : context.textBefore;
 
     return (
       /{(?:paste|block)\s+['"][^'"]*$/.test(textBefore) ||
-      /\$\.blocks?\.\w*$/.test(this.context.textBefore)
+      /\$\.blocks?\.\w*$/.test(context.textBefore)
     );
   }
 

@@ -13,7 +13,7 @@ import {
 } from 'vscode';
 
 import { join } from 'node:path';
-import { MainCompletionProvider } from '../autocomplete';
+import { MainCompletionProvider, type Context } from '../autocomplete';
 import { SELECTORS, RETRIGGER_COMMAND } from '../../common';
 
 export interface FileInfo {
@@ -33,16 +33,18 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
     document: TextDocument,
     position: Position,
   ): Promise<CompletionItem[]> {
-    this.createContext(position, document);
+    // Провайдер асинхронный, а экземпляр один на всё расширение: всё, что нужно
+    // после await, берётся из локального контекста, а не из поля this.context.
+    const context = this.createContext(position, document);
     const { isInclude, input } = createContext(position, document);
 
     if (!isInclude) {
       return [];
     }
 
-    const allowedExtensions = this.isSnippetCall ? ['php'] : ['tpl', 'html'];
+    const allowedExtensions = this.isSnippetCall(context) ? ['php'] : ['tpl', 'html'];
 
-    const path = this.getPath(input);
+    const path = this.getPath(input, document);
     const childrenOfPath = await this.getChildrenOfPath(path, allowedExtensions);
 
     return childrenOfPath.map(this.createCompletionItem);
@@ -101,8 +103,8 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
     return fragments[fragments.length - 1];
   }
 
-  getPath(input: string): string {
-    const elementsPath = getElementsPath(this.context.document);
+  getPath(input: string, document: TextDocument): string {
+    const elementsPath = getElementsPath(document);
     const pathArr = input.replace(/^[/\\]+/, '').split('/');
     pathArr.pop();
     const relative = pathArr.join('/');
@@ -110,8 +112,8 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
     return relative ? join(elementsPath, relative) : elementsPath;
   }
 
-  get isSnippetCall(): boolean {
-    const { document, textAfter, textBefore } = this.context;
+  isSnippetCall(context: Context): boolean {
+    const { document, textAfter, textBefore } = context;
 
     if (
       document.languageId === 'fenom' &&
