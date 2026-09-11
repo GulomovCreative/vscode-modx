@@ -109,7 +109,7 @@ export class FenomCompletionProvider extends MainCompletionProvider {
     let { before, after } = body;
     let diff = 0;
 
-    const calls = [...before.matchAll(/\$_modx->runSnippet\(['"]!?[\w@]['"],\s*\[|['"]!?[\w@]+['"]\s*\|\s*snippet\s*:\s*\[/g)] || [];
+    const calls = [...before.matchAll(/\$_modx->runSnippet\(['"]!?[\w@]+['"],\s*\[|['"]!?[\w@]+['"]\s*\|\s*snippet\s*:\s*\[/g)] || [];
     const lastCall = calls.at(-1);
 
     if (!lastCall) {
