@@ -42,8 +42,8 @@
 	},
 	"icon": "media/modx.png",
 	"activationEvents": [
-		"onLanguage",
-		"onStartupFinished"
+		"onLanguage:modx",
+		"onLanguage:fenom"
 	],
 	"main": "./out/extension.js",
 	"capabilities": {

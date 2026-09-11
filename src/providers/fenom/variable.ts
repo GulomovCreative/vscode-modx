@@ -513,7 +513,7 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
   }
 }
 
-export default languages.registerCompletionItemProvider(
+export default () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomVariablesProvider(),
   '$',
