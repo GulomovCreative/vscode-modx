@@ -160,29 +160,47 @@ export function createContext(
   document: TextDocument,
 ): FileProviderContext {
   const textFullLine = document.lineAt(position).text;
-  const textAfter = textFullLine.substring(position.character);
 
-  let re = '';
+  let re: RegExp | undefined;
 
   switch (document.languageId) {
     case 'modx':
       // Allow empty path and leading "/" so users can browse from the elements/project root.
-      re = '`(@FILE )([\\w./?]*)?`';
+      re = /`(@FILE )([\w./?]*)?`/g;
       break;
     case 'fenom':
-      re = '[\'"](@FILE |file:)([\\w./]*)?[\'"]';
+      re = /['"](@FILE |file:)([\w./]*)?['"]/g;
       break;
   }
 
-  const [ , include = '', input = '' ] = textFullLine.match(re) || [];
-  const isInclude = !/\/{2,}/.test(input) && !!include && /^[\w./]*['"`]/.test(textAfter);
-  const inputPosition = input
-    ? textFullLine.lastIndexOf(input)
-    : textFullLine.lastIndexOf(include) + include.length;
+  // В одной строке может быть несколько биндингов, например
+  // &tpl=`@FILE a.tpl` &tplWrapper=`@FILE b.tpl`. Берётся тот, внутри пути
+  // которого стоит курсор, а не первый в строке.
+  let include = '';
+  let input = '';
+  let inputPosition = -1;
+
+  for (const match of re ? textFullLine.matchAll(re) : []) {
+    const matchInclude = match[1] ?? '';
+    const matchInput = match[2] ?? '';
+    // Совпадение начинается с кавычки или обратной кавычки, за ней идёт
+    // префикс биндинга, и только потом сам путь.
+    const start = (match.index ?? 0) + 1 + matchInclude.length;
+
+    if (position.character >= start && position.character <= start + matchInput.length) {
+      include = matchInclude;
+      input = matchInput;
+      inputPosition = start;
+      break;
+    }
+  }
+
+  const isInclude = !!include && !/\/{2,}/.test(input);
+  const start = Math.max(inputPosition, 0);
 
   const inputRange = new Range(
-    new Position(position.line, Math.max(inputPosition, 0)),
-    new Position(position.line, Math.max(inputPosition, 0) + input.length)
+    new Position(position.line, start),
+    new Position(position.line, start + input.length)
   );
 
   return {

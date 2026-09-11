@@ -132,7 +132,7 @@ export class FenomCompletionProvider extends MainCompletionProvider {
         diff--;
       }
 
-      if (diff === 1 && lastCall.index) {
+      if (diff === 1 && typeof lastCall.index !== 'undefined') {
         before = before.substring(lastCall.index);
         break;
       }
@@ -147,7 +147,7 @@ export class FenomCompletionProvider extends MainCompletionProvider {
           diff--;
         }
 
-        if (diff === 0 && match.index) {
+        if (diff === 0 && typeof match.index !== 'undefined') {
           after = after.substring(0, match.index + 1);
           break after;
         }
