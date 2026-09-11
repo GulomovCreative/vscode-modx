@@ -135,10 +135,15 @@ class TextDocument {
     this.languageId = languageId;
     this.uri = vscode.Uri.file(fsPath);
     this.lineCount = this._lines.length;
+    // Версия растёт при каждой правке; кеш разбора документа завязан на неё.
+    this.version = 1;
+    this.getTextCalls = 0;
   }
 
   getText(range) {
     if (!range) {
+      this.getTextCalls++;
+
       return this._text;
     }
 
@@ -198,6 +203,16 @@ class TextDocument {
   }
 }
 
+// Правка документа: новый текст и следующая версия, как это делает редактор.
+function editDocument(document, text) {
+  document._text = text;
+  document._lines = text.split('\n');
+  document.lineCount = document._lines.length;
+  document.version += 1;
+
+  return document;
+}
+
 // Курсор помечается символом ‸ — так тесты читаются как шаблон. Обычная вертикальная
 // черта не годится: это оператор модификатора Fenom и разделитель значений в MODX.
 const CURSOR = '\u2038';
@@ -233,6 +248,7 @@ module.exports = {
   activate,
   complete,
   documentWithCursor,
+  editDocument,
   getProvider,
   insertText,
   labels,

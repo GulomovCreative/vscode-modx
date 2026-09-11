@@ -1,5 +1,6 @@
 import { dirname, join } from 'node:path';
 import {
+  CancellationToken,
   CompletionItem,
   CompletionItemKind,
   CompletionItemProvider,
@@ -17,15 +18,23 @@ import { FENOM_SELECTOR, getSortText } from '../../common';
 import { FenomCompletionProvider } from './autocomplete';
 import { type Context } from '../autocomplete';
 import { getElementsPath } from '../file/autocomplete';
+import { getDocumentText } from '../../cache';
 
 const BLOCK_NAME_PATTERN = /\{block\s+['"]([^'"]+)['"]/g;
 const TEMPLATE_REF_PATTERN = /\{(?:extends|use)\s+['"]([^'"]+)['"]/g;
 const MAX_TEMPLATE_DEPTH = 5;
 
+// Обход по {extends} и {use} читает файлы с диска, а провайдер вызывается на
+// каждое нажатие клавиши внутри кавычек. Разобранные имена блоков чужого
+// шаблона кешируются по времени его изменения, чтобы набор имени не перечитывал
+// дерево шаблонов заново на каждый символ.
+const templateCache = new Map<string, { mtime: number, names: string[] }>();
+
 class FenomBlockNameCompletion extends FenomCompletionProvider implements CompletionItemProvider {
   async provideCompletionItems(
     document: TextDocument,
     position: Position,
+    token?: CancellationToken,
   ) {
     // Разбор контекста целиком до первого await: экземпляр провайдера один на
     // всё расширение, и поле this.context переживёт ожидание не своим.
@@ -35,7 +44,11 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
       return [];
     }
 
-    const names = await this.collectBlockNames(document);
+    const names = await this.collectBlockNames(document, token);
+
+    if (token?.isCancellationRequested) {
+      return [];
+    }
 
     return [...names].map((name, index) => this.createCompletionItem(name, index));
   }
@@ -60,12 +73,13 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
     return item;
   }
 
-  async collectBlockNames(document: TextDocument): Promise<Set<string>> {
+  async collectBlockNames(document: TextDocument, token?: CancellationToken): Promise<Set<string>> {
     const names = new Set<string>();
     const visited = new Set<string>();
+    const text = getDocumentText(document);
 
-    this.extractBlockNames(document.getText(), names);
-    await this.collectFromTemplateRefs(document.getText(), document, names, visited, 0);
+    this.extractBlockNames(text, names);
+    await this.collectFromTemplateRefs(text, document, names, visited, 0, token);
 
     return names;
   }
@@ -84,8 +98,9 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
     names: Set<string>,
     visited: Set<string>,
     depth: number,
+    token?: CancellationToken,
   ): Promise<void> {
-    if (depth >= MAX_TEMPLATE_DEPTH) {
+    if (depth >= MAX_TEMPLATE_DEPTH || token?.isCancellationRequested) {
       return;
     }
 
@@ -95,25 +110,42 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
         continue;
       }
 
-      const uri = await this.resolveTemplateUri(templateName, document);
-      if (!uri || visited.has(uri.fsPath)) {
+      if (token?.isCancellationRequested) {
+        return;
+      }
+
+      const resolved = await this.resolveTemplateUri(templateName, document);
+      if (!resolved || visited.has(resolved.uri.fsPath)) {
         continue;
       }
 
+      const { uri, mtime } = resolved;
       visited.add(uri.fsPath);
+
+      const cached = templateCache.get(uri.fsPath);
+      if (cached && cached.mtime === mtime) {
+        cached.names.forEach(name => names.add(name));
+        continue;
+      }
 
       try {
         const content = await workspace.fs.readFile(uri);
         const templateText = Buffer.from(content).toString('utf8');
-        this.extractBlockNames(templateText, names);
-        await this.collectFromTemplateRefs(templateText, document, names, visited, depth + 1);
+        const own = new Set<string>();
+        this.extractBlockNames(templateText, own);
+        templateCache.set(uri.fsPath, { mtime, names: [...own] });
+        own.forEach(name => names.add(name));
+        await this.collectFromTemplateRefs(templateText, document, names, visited, depth + 1, token);
       } catch {
         // Template may be missing or outside the workspace.
       }
     }
   }
 
-  async resolveTemplateUri(name: string, document: TextDocument): Promise<Uri | undefined> {
+  async resolveTemplateUri(
+    name: string,
+    document: TextDocument,
+  ): Promise<{ uri: Uri, mtime: number } | undefined> {
     const cleaned = name.replace(/^(@FILE |file:)/, '');
     const candidates = [
       join(getElementsPath(document), cleaned),
@@ -126,7 +158,7 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
       try {
         const stat = await workspace.fs.stat(uri);
         if (stat.type === FileType.File) {
-          return uri;
+          return { uri, mtime: stat.mtime };
         }
       } catch {
         // Try the next candidate.

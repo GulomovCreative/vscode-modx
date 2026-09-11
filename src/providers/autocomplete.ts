@@ -1,4 +1,5 @@
 import { Range, Position, TextDocument } from 'vscode';
+import { getDocumentText } from '../cache';
 
 export interface Context {
   textFullLine: string
@@ -21,14 +22,14 @@ export class MainCompletionProvider {
     const { position, document } = this.context;
     const positionOffset = document.offsetAt(position);
 
-    return document.getText().slice(0, positionOffset);
+    return getDocumentText(document).slice(0, positionOffset);
   }
 
   getAfter(): string {
     const { position, document } = this.context;
     const positionOffset = document.offsetAt(position);
 
-    return document.getText().slice(positionOffset);
+    return getDocumentText(document).slice(positionOffset);
   }
 
   createContext(

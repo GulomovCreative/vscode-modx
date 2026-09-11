@@ -1,4 +1,5 @@
 import {
+  CancellationToken,
   TextDocument,
   Position,
   CompletionItem,
@@ -32,6 +33,7 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
   async provideCompletionItems(
     document: TextDocument,
     position: Position,
+    token?: CancellationToken,
   ): Promise<CompletionItem[]> {
     // Провайдер асинхронный, а экземпляр один на всё расширение: всё, что нужно
     // после await, берётся из локального контекста, а не из поля this.context.
@@ -45,7 +47,11 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
     const allowedExtensions = this.isSnippetCall(context) ? ['php'] : ['tpl', 'html'];
 
     const path = this.getPath(input, document);
-    const childrenOfPath = await this.getChildrenOfPath(path, allowedExtensions);
+    const childrenOfPath = await this.getChildrenOfPath(path, allowedExtensions, token);
+
+    if (token?.isCancellationRequested) {
+      return [];
+    }
 
     return childrenOfPath.map(this.createCompletionItem);
   }
@@ -62,7 +68,7 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
     return item;
   }
 
-  async getChildrenOfPath(path: string, allowedExtensions: string[]) {
+  async getChildrenOfPath(path: string, allowedExtensions: string[], token?: CancellationToken) {
     try {
       const filesTubles = await workspace.fs.readDirectory(
         Uri.file(path)
@@ -75,6 +81,10 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
       const fileInfoList: FileInfo[] = [];
 
       for (const file of files) {
+        if (token?.isCancellationRequested) {
+          return fileInfoList;
+        }
+
         const fileStat = await workspace.fs.stat(Uri.file(join(path, file)));
         const documentExtension = this.getDocumentExtension(file, fileStat);
         if (documentExtension && !allowedExtensions.includes(documentExtension)) {

@@ -1,6 +1,8 @@
 import { MainCompletionProvider } from '../autocomplete';
 import { tags } from './tag';
+import type { FenomBlock } from '../../cache';
 import { inRange } from '../../utils';
+import { getFenomBlocks } from '../../cache';
 
 export type ParsedSnippet = {
   name: string
@@ -175,23 +177,7 @@ export class FenomCompletionProvider extends MainCompletionProvider {
     };
   }
 
-  getBlocks(): {
-    start: number,
-    end: number,
-    input: string,
-  }[] {
-    const { document } = this.context;
-    const text = document.getText();
-
-    return [...text.matchAll(/{[^'"}]*(("[^"]*"|'[^']*')[^'"}]*)*}/gm)].map(match => {
-      const [ input = '' ] = match;
-      const index = match.index || 0;
-
-      return {
-        input,
-        start: index,
-        end: index + input.length,
-      };
-    });
+  getBlocks(): FenomBlock[] {
+    return getFenomBlocks(this.context.document);
   }
 }
