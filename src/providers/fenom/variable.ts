@@ -1,6 +1,6 @@
 import { CompletionItem, CompletionItemKind, CompletionItemProvider, MarkdownString, Position, SnippetString, TextDocument, Command, languages, Range } from 'vscode';
 import { t } from '@vscode/l10n';
-import { toPath } from 'lodash';
+import { toPath } from '../../utils';
 import { FenomCompletionProvider } from './autocomplete';
 import { FENOM_SELECTOR, getSortText, RETRIGGER_COMMAND } from '../../common';
 

@@ -81,13 +81,14 @@ async function getProvider({ language, triggerCharacters, kind = 'completion', i
   return matches[index].provider;
 }
 
-// Схемы нужны тестам как данные, а не через провайдеры: собираются тем же
-// esbuild с теми же стабами, чтобы списки были ровно те, что видит расширение.
-let schemas;
+// Часть модулей нужна тестам напрямую, а не через провайдеры: схемы как данные,
+// утилиты как функции. Собираются тем же esbuild с теми же стабами, чтобы это
+// был ровно тот код, который попадает в расширение.
+let source;
 
-async function loadSchemas() {
-  if (schemas) {
-    return schemas;
+async function loadSource() {
+  if (source) {
+    return source;
   }
 
   const entry = [
@@ -98,6 +99,7 @@ async function loadSchemas() {
     "export { fieldPrefixes, globalArrays } from './src/schemas/fastfield';",
     "export { modxModifiers, fenomModifiers } from './src/schemas/modifiers';",
     "export { snippets } from './src/schemas/snippets/';",
+    "export { inRange, toPath } from './src/utils';",
   ].join('\n');
 
   const result = await build({
@@ -121,9 +123,9 @@ async function loadSchemas() {
 
   const module_ = { exports: {} };
   new Function('module', 'exports', 'require', result.outputFiles[0].text)(module_, module_.exports, require);
-  schemas = module_.exports;
+  source = module_.exports;
 
-  return schemas;
+  return source;
 }
 
 class TextDocument {
@@ -234,6 +236,6 @@ module.exports = {
   getProvider,
   insertText,
   labels,
-  loadSchemas,
+  loadSource,
   vscode,
 };

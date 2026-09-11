@@ -2,7 +2,7 @@ const { test, describe, before } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { getProvider, complete, labels, loadSchemas } = require('./helpers');
+const { getProvider, complete, labels, loadSource } = require('./helpers');
 
 const ROOT = path.resolve(__dirname, '..');
 const read = (file) => JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8'));
@@ -77,7 +77,7 @@ describe('Локализация', () => {
     let schemas;
 
     before(async () => {
-      schemas = await loadSchemas();
+      schemas = await loadSource();
     });
 
     const modifierKey = (mod) => (Array.isArray(mod.name) ? mod.name[0] : mod.name);

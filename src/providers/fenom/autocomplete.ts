@@ -1,6 +1,6 @@
 import { MainCompletionProvider } from '../autocomplete';
 import { tags } from './tag';
-import { inRange } from 'lodash';
+import { inRange } from '../../utils';
 
 export type ParsedSnippet = {
   name: string
