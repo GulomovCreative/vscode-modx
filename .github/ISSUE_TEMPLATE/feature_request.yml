@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest autocomplete, a snippet schema, or anything else
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is missing
+      description: What you are writing by hand today that the extension could complete.
+      placeholder: |
+        pdoResources props are suggested, but msProducts from miniShop2 are not.
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: How it should look
+      description: The template as you would like to write it, with the suggestion in place.
+      render: html
+
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: >
+        For a snippet, a modifier or a setting — a link to its documentation or
+        to the code that declares it. That is where the descriptions come from.

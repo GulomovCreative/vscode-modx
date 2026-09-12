@@ -1,0 +1,89 @@
+name: Bug report
+description: Something in the extension does not work as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Syntax highlighting is maintained in separate repositories. If a
+        construct is coloured wrong, please report it there instead — the fix
+        reaches this extension with the next grammar release.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: What you did, what you expected, and what you got instead.
+      placeholder: |
+        Typing `[[$` inside a chunk offers nothing.
+        Expected the chunk names to be suggested.
+    validations:
+      required: true
+
+  - type: textarea
+    id: snippet
+    attributes:
+      label: Template
+      description: >
+        The smallest template that shows the problem. Mark the cursor position
+        with `‸` if it matters.
+      render: html
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language mode
+      description: Shown in the status bar, bottom right.
+      options:
+        - MODX
+        - Fenom
+        - HTML
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: extension-version
+    attributes:
+      label: Extension version
+      description: "Extensions view → IntelliSense for MODX. For example: 1.0.6"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: >
+        Copy from VS Code: Help → About (Windows, Linux) or Code → About
+        Visual Studio Code (macOS).
+      render: text
+      placeholder: |
+        Version: 1.104.0
+        OS: Windows_NT x64 10.0.26100
+    validations:
+      required: true
+
+  - type: input
+    id: modx-version
+    attributes:
+      label: MODX version
+      description: If the problem involves system settings, snippets or their props.
+
+  - type: textarea
+    id: settings
+    attributes:
+      label: Relevant settings
+      description: >
+        `files.associations`, `vscode-modx.elementsPath`, and any other
+        extension that touches the same files.
+      render: json
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before reporting
+      options:
+        - label: I searched the existing issues.
+          required: true
+        - label: The problem still happens with other extensions disabled.
