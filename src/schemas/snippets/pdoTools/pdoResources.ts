@@ -50,6 +50,6 @@ export const props: SnippetProp[] = [
 ];
 
 export default {
-	name,
-	props,
+  name,
+  props,
 } as SnippetData;

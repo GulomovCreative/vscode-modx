@@ -19,7 +19,6 @@ import { SELECTORS, RETRIGGER_COMMAND } from '../../common';
 export interface FileInfo {
   file: string;
   isFile: boolean;
-  documentExtension?: string;
 }
 
 export interface FileProviderContext {
@@ -82,7 +81,6 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
         fileInfoList.push({
           file,
           isFile: fileStat.type === FileType.File,
-          documentExtension,
         });
       }
 
