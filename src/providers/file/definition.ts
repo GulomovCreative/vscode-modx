@@ -27,7 +27,7 @@ class FileDefinitionProvider implements DefinitionProvider {
   }
 }
 
-export default languages.registerDefinitionProvider(
+export default () => languages.registerDefinitionProvider(
   SELECTORS,
   new FileDefinitionProvider(),
 );

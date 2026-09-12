@@ -104,13 +104,25 @@ Note, autocomplete works with a list of predefined snippets:
 
 ### `files.associations`
 
-Use the `files.associations` setting to tell VS Code to always open .tpl files in MODX or Fenom mode:
+Both languages register the `.tpl` extension, so use the `files.associations` setting to
+tell VS Code which one to open `.tpl` files in:
 
 ```json
 "files.associations": {
   "*.tpl": "modx",
   // or
   "*.tpl": "fenom",
+}
+```
+
+The same setting turns the extension on for other file types. `.html` files keep the
+built-in HTML mode by default, which leaves `resourceLangId == html` intact for Live
+Server, Emmet and other extensions that key off the language id. Opt in per glob when you
+store templates as `.html`:
+
+```json
+"files.associations": {
+  "core/elements/**/*.html": "modx"
 }
 ```
 
@@ -150,4 +162,5 @@ Add to your user/project/folder settings following value and make sure the `edit
 
 ## License
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx?ref=badge_large)
+[MIT](LICENSE). Dependency license scanning is tracked by
+[FOSSA](https://app.fossa.com/projects/git%2Bgithub.com%2FGulomovCreative%2Fvscode-modx?ref=badge_large).

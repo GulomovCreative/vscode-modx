@@ -41,7 +41,6 @@ export function createPropCompletionItem(
 ): CompletionItem {
   const item = new CompletionItem(prop.name, CompletionItemKind.Property);
   item.documentation = new MarkdownString(prop.description);
-  item.documentation.supportHtml = true;
   item.sortText = getSortText(index, prop.name);
 
   if (prop.example) {

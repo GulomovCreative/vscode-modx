@@ -6,4 +6,6 @@ src/**
 **/tsconfig.json
 .eslintrc.js
 node_modules
+out/**
+.github/workflows/**
 test/**

@@ -341,32 +341,32 @@ class FenomTagOptionCompletion extends FenomCompletionProvider implements Comple
   }
 }
 
-const fenomTagOptionCompletionDisposable = languages.registerCompletionItemProvider(
+const registerFenomTagOptionCompletion = () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomTagOptionCompletion(),
   ':'
 );
 
-const fenomTagCompletionDisposable = languages.registerCompletionItemProvider(
+const registerFenomTagCompletion = () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomTagCompletion(),
   '{'
 );
 
-const fenomTagCloseCompletionDisposable = languages.registerCompletionItemProvider(
+const registerFenomTagCloseCompletion = () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomTagCloseCompletion(),
   '/'
 );
 
-const fenomTagArgumentCompletionDisposable = languages.registerCompletionItemProvider(
+const registerFenomTagArgumentCompletion = () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomTagArgumentCompletion(),
 );
 
 export {
-  fenomTagCompletionDisposable,
-  fenomTagCloseCompletionDisposable,
-  fenomTagArgumentCompletionDisposable,
-  fenomTagOptionCompletionDisposable,
+  registerFenomTagCompletion,
+  registerFenomTagCloseCompletion,
+  registerFenomTagArgumentCompletion,
+  registerFenomTagOptionCompletion,
 };

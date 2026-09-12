@@ -49,10 +49,6 @@ export class FenomCompletionProvider extends MainCompletionProvider {
     return this.getParentTags().at(-1);
   }
 
-  getRootTag(): ParsedTag | undefined {
-    return this.getParentTags().at(0);
-  }
-
   hasExtendsBefore (): boolean {
     const before = this.getBefore();
 

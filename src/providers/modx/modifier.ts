@@ -50,7 +50,6 @@ class ModxModifierCompletion extends ModxCompletionProvider implements Completio
   ): CompletionItem {
     const item = new CompletionItem(name, CompletionItemKind.Method);
     item.documentation = new MarkdownString(t(`modx.modifier.${Array.isArray(mod.name) ? mod.name[0] : mod.name}`));
-    item.documentation.supportHtml = true;
 
     if (mod.example) {
       item.documentation.appendMarkdown('\n\n');
@@ -94,7 +93,7 @@ class ModxModifierCompletion extends ModxCompletionProvider implements Completio
   }
 }
 
-export default registerCompletionItemProvider(
+export default () => registerCompletionItemProvider(
   MODX_SELECTOR,
   new ModxModifierCompletion(),
   ':',
