@@ -62,8 +62,7 @@
 					"modx"
 				],
 				"extensions": [
-					".tpl",
-					".html"
+					".tpl"
 				],
 				"configuration": "./languages/modx-configuration.json",
 				"icon": {
@@ -78,8 +77,7 @@
 					"fenom"
 				],
 				"extensions": [
-					".tpl",
-					".html"
+					".tpl"
 				],
 				"configuration": "./languages/fenom-configuration.json",
 				"icon": {
