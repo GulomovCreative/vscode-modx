@@ -61,7 +61,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 First published release.
 
-[Unreleased]: https://github.com/GulomovCreative/vscode-modx/compare/4137011...main
+[Unreleased]: https://github.com/GulomovCreative/vscode-modx/compare/4137011...master
 [1.0.6]: https://github.com/GulomovCreative/vscode-modx/compare/11de72a...4137011
 [1.0.5]: https://github.com/GulomovCreative/vscode-modx/compare/b1ff664...11de72a
 [1.0.4]: https://github.com/GulomovCreative/vscode-modx/compare/f52c0df...b1ff664
