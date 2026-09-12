@@ -1,4 +1,3 @@
-import { dirname, join } from 'node:path';
 import {
   CancellationToken,
   CompletionItem,
@@ -17,7 +16,7 @@ import {
 import { FENOM_SELECTOR, getSortText } from '../../common';
 import { FenomCompletionProvider } from './autocomplete';
 import { type Context } from '../autocomplete';
-import { getElementsPath } from '../file/autocomplete';
+import { getElementsUri, pathSegments } from '../file/autocomplete';
 import { getDocumentText } from '../../cache';
 
 const BLOCK_NAME_PATTERN = /\{block\s+['"]([^'"]+)['"]/g;
@@ -115,14 +114,15 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
       }
 
       const resolved = await this.resolveTemplateUri(templateName, document);
-      if (!resolved || visited.has(resolved.uri.fsPath)) {
+      const key = resolved?.uri.toString();
+      if (!resolved || !key || visited.has(key)) {
         continue;
       }
 
       const { uri, mtime } = resolved;
-      visited.add(uri.fsPath);
+      visited.add(key);
 
-      const cached = templateCache.get(uri.fsPath);
+      const cached = templateCache.get(key);
       if (cached && cached.mtime === mtime) {
         cached.names.forEach(name => names.add(name));
         continue;
@@ -130,10 +130,11 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
 
       try {
         const content = await workspace.fs.readFile(uri);
-        const templateText = Buffer.from(content).toString('utf8');
+        // TextDecoder есть и в Node, и в браузере; Buffer — только в Node.
+        const templateText = new TextDecoder().decode(content);
         const own = new Set<string>();
         this.extractBlockNames(templateText, own);
-        templateCache.set(uri.fsPath, { mtime, names: [...own] });
+        templateCache.set(key, { mtime, names: [...own] });
         own.forEach(name => names.add(name));
         await this.collectFromTemplateRefs(templateText, document, names, visited, depth + 1, token);
       } catch {
@@ -146,14 +147,18 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
     name: string,
     document: TextDocument,
   ): Promise<{ uri: Uri, mtime: number } | undefined> {
-    const cleaned = name.replace(/^(@FILE |file:)/, '');
+    const cleaned = pathSegments(name.replace(/^(@FILE |file:)/, ''));
+    const elements = getElementsUri(document);
     const candidates = [
-      join(getElementsPath(document), cleaned),
-      join(dirname(document.uri.fsPath), cleaned),
+      elements && Uri.joinPath(elements, ...cleaned),
+      // Рядом с самим шаблоном: ".." от файла — это его каталог.
+      Uri.joinPath(document.uri, '..', ...cleaned),
     ];
 
-    for (const candidate of candidates) {
-      const uri = Uri.file(candidate);
+    for (const uri of candidates) {
+      if (!uri) {
+        continue;
+      }
 
       try {
         const stat = await workspace.fs.stat(uri);

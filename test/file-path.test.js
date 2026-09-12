@@ -178,3 +178,63 @@ describe('@FILE: несколько биндингов в одной строк�
     assert.deepEqual(items, []);
   });
 });
+
+// #20: схема бралась из Uri.file(), то есть всегда file:. В виртуальной рабочей
+// области — github.dev, vscode.dev без клона — файлы лежат под vscode-vfs:, и
+// провайдер искал их на несуществующем диске.
+describe('@FILE: виртуальная рабочая область', () => {
+  const VFS = 'vscode-vfs://github/GulomovCreative/site';
+  let files;
+  let definition;
+
+  before(async () => {
+    files = await getProvider({ language: 'modx', triggerCharacters: [':', '/'] });
+    definition = await getProvider({ language: 'modx', kind: 'definition' });
+  });
+
+  beforeEach(() => {
+    vscode.setWorkspace({
+      files: new Map([
+        [`${VFS}/core/elements`, {
+          type: FileType.Directory,
+          children: [['chunks', FileType.Directory], ['base.tpl', FileType.File]],
+        }],
+        [`${VFS}/core/elements/chunks`, {
+          type: FileType.Directory,
+          children: [['item.tpl', FileType.File]],
+        }],
+        [`${VFS}/core/elements/base.tpl`, { type: FileType.File, content: '' }],
+        [`${VFS}/core/elements/chunks/item.tpl`, { type: FileType.File, content: '' }],
+      ]),
+      folder: { uri: vscode.Uri.parse(VFS), name: 'site', index: 0 },
+      configuration: { 'vscode-modx': { elementsPath: '/core/elements/' } },
+    });
+  });
+
+  const document = `${VFS}/core/elements/tpl/page.tpl`;
+
+  test('подсказки находят файлы по схеме рабочей области', async () => {
+    const items = await complete(files, '[[$x? &tpl=`@FILE ‸`]]', 'modx', document);
+
+    assert.deepEqual(labels(items), ['chunks', 'base.tpl']);
+  });
+
+  test('вложенный каталог раскрывается так же', async () => {
+    const items = await complete(files, '[[$x? &tpl=`@FILE chunks/‸`]]', 'modx', document);
+
+    assert.deepEqual(labels(items), ['item.tpl']);
+  });
+
+  test('переход к файлу сохраняет схему, а не подставляет file:', () => {
+    const { document: source, position } = documentWithCursor(
+      '[[$x? &tpl=`@FILE chunks/it‸em.tpl`]]',
+      'modx',
+      document,
+    );
+
+    const [ link ] = definition.provideDefinition(source, position);
+
+    assert.equal(link.targetUri.scheme, 'vscode-vfs');
+    assert.equal(link.targetUri.toString(), `${VFS}/core/elements/chunks/item.tpl`);
+  });
+});
