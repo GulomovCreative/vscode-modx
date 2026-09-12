@@ -106,20 +106,20 @@ class ModxSnippetPropCompletion extends ModxCompletionProvider implements Comple
   }
 }
 
-const modxSnippetCompletionDisposable = languages.registerCompletionItemProvider(
+const registerModxSnippetCompletion = () => languages.registerCompletionItemProvider(
   MODX_SELECTOR,
   new ModxSnippetCompletion(),
   '[',
   '!'
 );
 
-const modxSnippetPropCompletionDisposable = languages.registerCompletionItemProvider(
+const registerModxSnippetPropCompletion = () => languages.registerCompletionItemProvider(
   MODX_SELECTOR,
   new ModxSnippetPropCompletion(),
   '&'
 );
 
 export {
-  modxSnippetCompletionDisposable,
-  modxSnippetPropCompletionDisposable,
+  registerModxSnippetCompletion,
+  registerModxSnippetPropCompletion,
 };

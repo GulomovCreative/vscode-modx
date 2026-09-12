@@ -147,7 +147,7 @@ class FenomSnippetPropProvider extends FenomCompletionProvider implements Comple
   }
 }
 
-const fenomSnippetModifierCompletionDisposable = languages.registerCompletionItemProvider(
+const registerFenomSnippetModifierCompletion = () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomSnippetModifierProvider(),
   '\'',
@@ -155,7 +155,7 @@ const fenomSnippetModifierCompletionDisposable = languages.registerCompletionIte
   '!'
 );
 
-const fenomSnippetMethodCompletionDisposable = languages.registerCompletionItemProvider(
+const registerFenomSnippetMethodCompletion = () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomSnippetMethodProvider(),
   '\'',
@@ -163,7 +163,7 @@ const fenomSnippetMethodCompletionDisposable = languages.registerCompletionItemP
   '!'
 );
 
-const fenomSnippetPropCompletionDisposable = languages.registerCompletionItemProvider(
+const registerFenomSnippetPropCompletion = () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomSnippetPropProvider(),
   '\'',
@@ -171,7 +171,7 @@ const fenomSnippetPropCompletionDisposable = languages.registerCompletionItemPro
 );
 
 export {
-  fenomSnippetModifierCompletionDisposable,
-  fenomSnippetMethodCompletionDisposable,
-  fenomSnippetPropCompletionDisposable,
+  registerFenomSnippetModifierCompletion,
+  registerFenomSnippetMethodCompletion,
+  registerFenomSnippetPropCompletion,
 };

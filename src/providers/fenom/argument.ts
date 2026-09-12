@@ -36,7 +36,7 @@ class FenomArgumentCompletionProvider extends FenomCompletionProvider implements
   }
 }
 
-export default languages.registerCompletionItemProvider(
+export default () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomArgumentCompletionProvider(),
   '@'

@@ -45,7 +45,7 @@ class ModxChunkCompletion extends ModxCompletionProvider implements CompletionIt
   }
 }
 
-export default languages.registerCompletionItemProvider(
+export default () => languages.registerCompletionItemProvider(
   MODX_SELECTOR,
   new ModxChunkCompletion(),
   '$'
