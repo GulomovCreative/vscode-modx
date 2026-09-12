@@ -94,7 +94,7 @@ class ModxModifierCompletion extends ModxCompletionProvider implements Completio
   }
 }
 
-export default registerCompletionItemProvider(
+export default () => registerCompletionItemProvider(
   MODX_SELECTOR,
   new ModxModifierCompletion(),
   ':',

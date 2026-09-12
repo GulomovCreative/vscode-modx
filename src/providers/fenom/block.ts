@@ -134,7 +134,7 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
   }
 }
 
-export default languages.registerCompletionItemProvider(
+export default () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomBlockNameCompletion(),
   "'",

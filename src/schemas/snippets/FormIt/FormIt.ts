@@ -259,9 +259,6 @@ export const props = [
   },
 
   {
-    name: 'redirectTo',
-  },
-  {
     name: 'redirectParams',
   },
 

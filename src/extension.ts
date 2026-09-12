@@ -1,56 +1,57 @@
 import { type ExtensionContext, extensions, window } from 'vscode';
 import './localize';
 
-import { modxSnippetCompletionDisposable, modxSnippetPropCompletionDisposable } from './providers/modx/snippet';
-import modxModifierCompletionDisposable from './providers/modx/modifier';
-import modxPlaceholderCompletionDisposable from './providers/modx/placeholder';
-import modxSettingCompletionDisposable from './providers/modx/setting';
-import modxFastFieldCompletionDisposable from './providers/modx/fastfield';
-import modxChunkCompletionDisposable from './providers/modx/chunk';
+import { registerModxSnippetCompletion, registerModxSnippetPropCompletion } from './providers/modx/snippet';
+import registerModxModifierCompletion from './providers/modx/modifier';
+import registerModxPlaceholderCompletion from './providers/modx/placeholder';
+import registerModxSettingCompletion from './providers/modx/setting';
+import registerModxFastFieldCompletion from './providers/modx/fastfield';
+import registerModxChunkCompletion from './providers/modx/chunk';
 
-import fileCompletionDisposable from './providers/file/autocomplete';
-import fileLocationDisposable from './providers/file/definition';
+import registerFileCompletion from './providers/file/autocomplete';
+import registerFileDefinition from './providers/file/definition';
 
-import { fenomTagCompletionDisposable, fenomTagCloseCompletionDisposable, fenomTagArgumentCompletionDisposable, fenomTagOptionCompletionDisposable } from './providers/fenom/tag';
-import fenomVariablesCompletionDisposable from './providers/fenom/variable';
-import { fenomModifierCompletionDisposable, fenomConfigModifierCompletionDisposable } from './providers/fenom/modifier';
-import { fenomSnippetModifierCompletionDisposable, fenomSnippetMethodCompletionDisposable, fenomSnippetPropCompletionDisposable } from './providers/fenom/snippet';
-import fenomArgumentCompletionDisposable from './providers/fenom/argument';
-import fenomBlockNameCompletionDisposable from './providers/fenom/block';
+import { registerFenomTagCompletion, registerFenomTagCloseCompletion, registerFenomTagArgumentCompletion, registerFenomTagOptionCompletion } from './providers/fenom/tag';
+import registerFenomVariablesCompletion from './providers/fenom/variable';
+import { registerFenomModifierCompletion, registerFenomConfigModifierCompletion } from './providers/fenom/modifier';
+import { registerFenomSnippetModifierCompletion, registerFenomSnippetMethodCompletion, registerFenomSnippetPropCompletion } from './providers/fenom/snippet';
+import registerFenomArgumentCompletion from './providers/fenom/argument';
+import registerFenomBlockNameCompletion from './providers/fenom/block';
 
 export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
-    modxModifierCompletionDisposable,
-    modxSnippetCompletionDisposable,
-    modxSnippetPropCompletionDisposable,
-    modxPlaceholderCompletionDisposable,
-    modxSettingCompletionDisposable,
-    modxFastFieldCompletionDisposable,
-    modxChunkCompletionDisposable,
+    registerModxModifierCompletion(),
+    registerModxSnippetCompletion(),
+    registerModxSnippetPropCompletion(),
+    registerModxPlaceholderCompletion(),
+    registerModxSettingCompletion(),
+    registerModxFastFieldCompletion(),
+    registerModxChunkCompletion(),
 
-    fenomTagCompletionDisposable,
-    fenomTagCloseCompletionDisposable,
-    fenomTagArgumentCompletionDisposable,
-    fenomTagOptionCompletionDisposable,
-    fenomBlockNameCompletionDisposable,
+    registerFenomTagCompletion(),
+    registerFenomTagCloseCompletion(),
+    registerFenomTagArgumentCompletion(),
+    registerFenomTagOptionCompletion(),
+    registerFenomBlockNameCompletion(),
 
-    fenomModifierCompletionDisposable,
-    fenomConfigModifierCompletionDisposable,
-    fenomVariablesCompletionDisposable,
+    registerFenomModifierCompletion(),
+    registerFenomConfigModifierCompletion(),
+    registerFenomVariablesCompletion(),
 
-    fenomSnippetModifierCompletionDisposable,
-    fenomSnippetMethodCompletionDisposable,
-    fenomSnippetPropCompletionDisposable,
-    fenomArgumentCompletionDisposable,
+    registerFenomSnippetModifierCompletion(),
+    registerFenomSnippetMethodCompletion(),
+    registerFenomSnippetPropCompletion(),
+    registerFenomArgumentCompletion(),
 
-    fileLocationDisposable,
-    fileCompletionDisposable,
+    registerFileDefinition(),
+    registerFileCompletion(),
   );
 
   const htmlExtension = extensions.getExtension('vscode.html-language-features');
 
   if (!htmlExtension) {
     const output = window.createOutputChannel('vscode-modx');
+    context.subscriptions.push(output);
 
     output.appendLine(
       'Warning: Could not find vscode.html-language-features.',
@@ -59,5 +60,5 @@ export async function activate(context: ExtensionContext) {
     return;
   }
 
-  await htmlExtension?.activate();
+  await htmlExtension.activate();
 }
