@@ -6,6 +6,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- The extension runs in the browser: github.dev, vscode.dev and any other
+  virtual workspace. It ships a second bundle built for a web extension host,
+  and `capabilities.virtualWorkspaces` no longer warns about limited support.
+
 ### Changed
 
 - Paths to template files are built as URIs from the workspace folder rather
