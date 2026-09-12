@@ -57,24 +57,6 @@ export class FenomCompletionProvider extends MainCompletionProvider {
     return /(?<!{\*\s*?){extends .*}/.test(before);
   }
 
-  get isInMustache(): boolean {
-    const { position, document } = this.context;
-
-    return Boolean(document.getWordRangeAtPosition(position, /{([^}])+}/));
-  }
-
-  get isInMustacheBlock(): boolean {
-    if (this.isInMustache) {
-      return true;
-    }
-
-    const { document, position } = this.context;
-    const blocks = this.getBlocks();
-    const positionOffset = document.offsetAt(position);
-
-    return blocks.some(block => inRange(positionOffset, block.start, block.end));
-  }
-
   getBody(): {
     before: string,
     after: string,

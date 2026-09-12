@@ -353,7 +353,7 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
       item.insertText = new SnippetString(`${item.insertText}(${body})`);
     }
 
-    if (!this.isInMustacheBlock) {
+    if (!this.isInsideTag) {
       item.insertText = new SnippetString(`{\\$${item.insertText}$0}`);
       item.range = new Range(
         this.context.wordRange.start.translate({ characterDelta: -1 }),

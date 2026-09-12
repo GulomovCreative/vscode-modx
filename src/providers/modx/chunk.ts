@@ -10,7 +10,7 @@ class ModxChunkCompletion extends ModxCompletionProvider implements CompletionIt
     position: Position,
   ) {
     this.createContext(position, document);
-    if (this.isInBraces || !/\$$/.test(this.context.textBefore)) {
+    if (this.isInsideTag || !/\$$/.test(this.context.textBefore)) {
       return;
     }
 

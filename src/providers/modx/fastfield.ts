@@ -27,13 +27,13 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
   }
 
   getRootCompletionItems(): CompletionItem[] {
-    const isInBracesBlock = this.isInBracesBlock;
+    const isInsideTag = this.isInsideTag;
     const [ tokens = '' ] = this.context.textBefore.match(/!?#$/) || [];
     const { wordRange } = this.context;
 
     const items = globalArrays.map((name, index) => {
-      const item = this.createCompletionItem(name, index, isInBracesBlock, tokens, wordRange);
-      item.insertText = isInBracesBlock
+      const item = this.createCompletionItem(name, index, isInsideTag, tokens, wordRange);
+      item.insertText = isInsideTag
         ? new SnippetString(`${name}.\${1:key}`)
         : new SnippetString(`[[${tokens}${name}.\${1:key}]]`);
       item.detail = `[[${tokens}${name}.key]]`;
@@ -42,9 +42,9 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
       return item;
     });
 
-    const resourceSnippet = this.createCompletionItem('${id}.${field}', globalArrays.length, isInBracesBlock, tokens, wordRange);
+    const resourceSnippet = this.createCompletionItem('${id}.${field}', globalArrays.length, isInsideTag, tokens, wordRange);
     resourceSnippet.kind = CompletionItemKind.Snippet;
-    resourceSnippet.insertText = isInBracesBlock
+    resourceSnippet.insertText = isInsideTag
       ? new SnippetString('${1:id}.${2:pagetitle}')
       : new SnippetString(`[[${tokens}\${1:id}.\${2:pagetitle}]]`);
     resourceSnippet.detail = `[[${tokens}15.pagetitle]]`;
@@ -57,17 +57,17 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
   }
 
   getFieldCompletionItems(): CompletionItem[] {
-    const isInBracesBlock = this.isInBracesBlock;
+    const isInsideTag = this.isInsideTag;
     const [ tokens = '' ] = this.context.textBefore.match(/!?#\d+\.$/) || [];
     const prefix = tokens.slice(0, -1);
     const { wordRange } = this.context;
 
     const fieldItems = fields.map((field, index) => {
-      const item = this.createCompletionItem(field, index, isInBracesBlock, tokens, wordRange, prefix);
+      const item = this.createCompletionItem(field, index, isInsideTag, tokens, wordRange, prefix);
       item.documentation = this.createDocumentation(t(`resource.${field}`));
       item.detail = `[[${prefix}.${field}]]`;
 
-      if (!isInBracesBlock) {
+      if (!isInsideTag) {
         item.insertText = new SnippetString(`[[${prefix}.${field}]]`);
       }
 
@@ -75,13 +75,13 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
     });
 
     const prefixItems = fieldPrefixes.map((name, index) => {
-      const item = this.createCompletionItem(name, fields.length + index, isInBracesBlock, tokens, wordRange, prefix);
+      const item = this.createCompletionItem(name, fields.length + index, isInsideTag, tokens, wordRange, prefix);
       item.kind = CompletionItemKind.Snippet;
       item.documentation = this.createDocumentation(t(`fastfield.${name.slice(0, -1)}`));
       item.detail = `[[${prefix}.${name}key]]`;
 
       const insertName = `${name}\${1:name}`;
-      item.insertText = isInBracesBlock
+      item.insertText = isInsideTag
         ? new SnippetString(insertName)
         : new SnippetString(`[[${prefix}.${insertName}]]`);
 
@@ -94,7 +94,7 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
   createCompletionItem(
     name: string,
     index: number,
-    isInBracesBlock: boolean,
+    isInsideTag: boolean,
     tokens: string,
     wordRange: Range,
     prefix = '',
@@ -102,7 +102,7 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
     const item = new CompletionItem(name, CompletionItemKind.Variable);
     item.sortText = getSortText(index, name);
 
-    if (!isInBracesBlock) {
+    if (!isInsideTag) {
       item.filterText = (prefix ? `${prefix}.` : tokens) + name;
       item.range = new Range(
         wordRange.start.translate({ characterDelta: tokens.length * -1 }),

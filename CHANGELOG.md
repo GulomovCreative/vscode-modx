@@ -14,6 +14,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   assignment, the `{case}` and `{default}` branch markers, and a tag that opens
   and closes on one line no longer shifts the line under it.
 
+### Fixed
+
+- Suggestions typed between two tags on the same line behave as they do outside
+  a tag: a system setting completes to `[[++name]]` instead of a bare name, and
+  a chunk is offered at all. Where a construct ends was decided by a regular
+  expression that searched the current line and did not stop at `]]`, so
+  `[[a]] … [[b]]` read as one tag with the cursor inside it.
+
 ## [1.1.0]
 
 ### Added

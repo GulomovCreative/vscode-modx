@@ -42,7 +42,7 @@ class FenomSnippetModifierProvider extends FenomCompletionProvider implements Co
     const before = this.getBefore();
 
     if (
-      this.isInMustacheBlock &&
+      this.isInsideTag &&
       (
         (
           /^['"](\s*\|\s*snippet)?[^\])]?/.test(textAfter)
@@ -88,7 +88,7 @@ class FenomSnippetMethodProvider extends FenomCompletionProvider implements Comp
 
   get shouldProvide(): boolean {
     if (
-      this.isInMustacheBlock
+      this.isInsideTag
       && /\$_modx->runSnippet\(['"]!?$/.test(this.context.textBefore)
     ) {
       return true;
@@ -135,7 +135,7 @@ class FenomSnippetPropProvider extends FenomCompletionProvider implements Comple
 
   shouldProvide(): boolean {
     if (
-      this.isInMustacheBlock
+      this.isInsideTag
       && (
         /(?<=[[,])\s*['"]$/.test(this.context.textBefore) || /^\s*['"]$/.test(this.context.textBefore)
       )

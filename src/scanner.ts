@@ -189,6 +189,54 @@ export function scan(text: string, language: TemplateLanguage): Token[] {
   return tokens;
 }
 
+/** Незакрытая конструкция: её ещё набирают, конца у неё пока нет. */
+function isUnterminated(token: Token): boolean {
+  if (token.kind === 'modx-tag') {
+    return !token.value.endsWith(MODX_CLOSE);
+  }
+
+  if (token.kind === 'fenom-tag') {
+    return !token.value.endsWith('}');
+  }
+
+  return false;
+}
+
+/**
+ * Область, внутри которой стоит курсор.
+ *
+ * Области идут подряд и не пересекаются, поэтому нужная ищется делением
+ * пополам: провайдеры спрашивают это на каждое нажатие клавиши, а в большом
+ * шаблоне областей тысячи.
+ *
+ * Курсор на самой открывающей скобке ещё снаружи, на закрывающей — уже
+ * снаружи. Исключение одно: у незакрытой конструкции конец совпадает с концом
+ * текста, и курсор там внутри — именно так выглядит тег, который набирают.
+ */
+export function tokenAt(tokens: Token[], offset: number): Token | undefined {
+  let low = 0;
+  let high = tokens.length - 1;
+
+  while (low <= high) {
+    const middle = (low + high) >> 1;
+    const token = tokens[middle];
+
+    if (offset <= token.start) {
+      high = middle - 1;
+      continue;
+    }
+
+    if (offset > token.end || (offset === token.end && !isUnterminated(token))) {
+      low = middle + 1;
+      continue;
+    }
+
+    return token;
+  }
+
+  return undefined;
+}
+
 /**
  * Смещения, которые нельзя трогать при форматировании: содержимое комментариев,
  * блоков {ignore} и многострочных конструкций шаблона.

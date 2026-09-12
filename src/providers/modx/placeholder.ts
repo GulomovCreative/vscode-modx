@@ -22,7 +22,7 @@ class ModxPlaceholderCompletion extends ModxCompletionProvider implements Comple
   }
 
   getCompletionItems(context: CompletionContext) {
-    const isInBracesBlock = this.isInBracesBlock;
+    const isInsideTag = this.isInsideTag;
     const [ tokens = '' ] = this.context.textBefore.match(/!?[+*]$/) || [];
     const { wordRange } = this.context;
 
@@ -32,13 +32,13 @@ class ModxPlaceholderCompletion extends ModxCompletionProvider implements Comple
       items.push('modx.user.id', 'modx.user.username');
     }
 
-    return items.map((field, index) => this.createCompletionItem(field, index, isInBracesBlock, tokens, wordRange));
+    return items.map((field, index) => this.createCompletionItem(field, index, isInsideTag, tokens, wordRange));
   }
 
   createCompletionItem(
     name: string,
     index: number,
-    isInBracesBlock: boolean,
+    isInsideTag: boolean,
     tokens: string,
     wordRange: Range,
   ): CompletionItem {
@@ -55,7 +55,7 @@ class ModxPlaceholderCompletion extends ModxCompletionProvider implements Comple
 
     item.detail = `[[${tokens + name}]]`;
 
-    if (!isInBracesBlock) {
+    if (!isInsideTag) {
       item.insertText = new SnippetString(`[[${tokens + name}]]`);
       item.filterText = tokens + name;
       item.range = new Range(

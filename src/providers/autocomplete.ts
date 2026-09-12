@@ -1,5 +1,6 @@
 import { Range, Position, TextDocument } from 'vscode';
-import { getDocumentText } from '../cache';
+import { getDocumentText, getTokens } from '../cache';
+import { tokenAt } from '../scanner';
 
 export interface Context {
   textFullLine: string
@@ -23,6 +24,20 @@ export class MainCompletionProvider {
     const positionOffset = document.offsetAt(position);
 
     return getDocumentText(document).slice(0, positionOffset);
+  }
+
+  /**
+   * Курсор внутри конструкции шаблона — `[[…]]` или `{…}`.
+   *
+   * Разбор ведёт сканер, а не регулярное выражение по строке: конструкция
+   * может занимать несколько строк, содержать `}` в кавычках или `]]` в
+   * значении в обратных кавычках, а в одной строке их может быть несколько.
+   */
+  get isInsideTag(): boolean {
+    const { position, document } = this.context;
+    const kind = tokenAt(getTokens(document), document.offsetAt(position))?.kind;
+
+    return kind === 'modx-tag' || kind === 'fenom-tag';
   }
 
   getAfter(): string {

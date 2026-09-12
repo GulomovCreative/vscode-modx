@@ -1,5 +1,7 @@
 import { TextDocument } from 'vscode';
 
+import { scan, type TemplateLanguage, type Token } from './scanner';
+
 /**
  * Кеш разбора документа, действующий до его следующей правки.
  *
@@ -32,6 +34,15 @@ function createDocumentCache<T>(compute: (document: TextDocument) => T) {
 
 export const getDocumentText = createDocumentCache((document) => document.getText());
 
+/**
+ * Разбор документа на конструкции шаблона.
+ *
+ * Один разбор на правку документа обслуживает все провайдеры языка: и проверку
+ * «курсор внутри конструкции», и перечисление тегов Fenom.
+ */
+export const getTokens = createDocumentCache((document): Token[] =>
+  scan(getDocumentText(document), document.languageId as TemplateLanguage));
+
 export interface FenomBlock {
   start: number
   end: number
@@ -39,14 +50,6 @@ export interface FenomBlock {
 }
 
 export const getFenomBlocks = createDocumentCache((document): FenomBlock[] =>
-  [...getDocumentText(document).matchAll(/{[^'"}]*(("[^"]*"|'[^']*')[^'"}]*)*}/gm)].map(match => {
-    const [ input = '' ] = match;
-    const index = match.index || 0;
-
-    return {
-      input,
-      start: index,
-      end: index + input.length,
-    };
-  }),
-);
+  getTokens(document)
+    .filter(token => token.kind === 'fenom-tag')
+    .map(({ start, end, value }) => ({ start, end, input: value })));

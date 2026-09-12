@@ -6,24 +6,6 @@ export interface ParsedSnippetData {
 }
 
 export class ModxCompletionProvider extends MainCompletionProvider {
-  get isInBraces(): boolean {
-    const { position, document } = this.context;
-
-    return Boolean(document.getWordRangeAtPosition(position, /\[{2}([^}])+\]{2}/));
-  }
-
-  get isInBracesBlock(): boolean {
-    if (this.isInBraces) {
-      return true;
-    }
-
-    const before = this.getBefore();
-    const openningSquareBracketsCount = (before.match(/(\[{2})/g) || []).length;
-    const closingSquareBracketsCount = (before.match(/(\]{2})/g) || []).length;
-
-    return openningSquareBracketsCount > closingSquareBracketsCount;
-  }
-
   getSnippet(): ParsedSnippetData {
     const body = this.getBody();
     const [ , name ] = body.match(/(?<=\[{2})(?:!)?(.*?)(?=\?|@|:)/) || [];
