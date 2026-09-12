@@ -134,14 +134,14 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
+		"@gulomov/fenom-tmlanguage": "^2.0.2",
+		"@gulomov/modx-tmlanguage": "^2.0.0",
 		"@types/node": "^16.18.34",
 		"@types/vscode": "^1.81.0",
 		"@vscode/l10n-dev": "^0.0.35",
 		"@vscode/vsce": "^3.9.2",
 		"esbuild": "^0.28.2",
 		"eslint": "^10.10.0",
-		"fenom-tmlanguage": "^1.0.0",
-		"modx-tmlanguage": "^1.2.0",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.70.0"
 	},
