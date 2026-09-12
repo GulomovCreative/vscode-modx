@@ -7,6 +7,9 @@ src/**
 eslint.config.js
 node_modules
 out/**
-.github/workflows/**
+.github/**
+!.github/banner.png
+CONTRIBUTING.md
+SECURITY.md
 test/**
 scripts/**

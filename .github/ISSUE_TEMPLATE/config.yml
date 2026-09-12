@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: MODX syntax highlighting
+    url: https://github.com/GulomovCreative/modx-tmlanguage/issues
+    about: Colouring of MODX tags is maintained in its own repository.
+  - name: Fenom syntax highlighting
+    url: https://github.com/GulomovCreative/fenom-tmlanguage/issues
+    about: Colouring of Fenom tags is maintained in its own repository.
+  - name: MODX community
+    url: https://modx.pro
+    about: Questions about MODX itself rather than about the extension.
