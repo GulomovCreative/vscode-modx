@@ -89,9 +89,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 First published release.
 
-[Unreleased]: https://github.com/GulomovCreative/vscode-modx/compare/4137011...master
-[1.0.6]: https://github.com/GulomovCreative/vscode-modx/compare/11de72a...4137011
-[1.0.5]: https://github.com/GulomovCreative/vscode-modx/compare/b1ff664...11de72a
-[1.0.4]: https://github.com/GulomovCreative/vscode-modx/compare/f52c0df...b1ff664
-[1.0.3]: https://github.com/GulomovCreative/vscode-modx/compare/1046d49...f52c0df
-[1.0.2]: https://github.com/GulomovCreative/vscode-modx/commit/1046d49
+[Unreleased]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.6...master
+[1.0.6]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.5...v1.0.6
+[1.0.5]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.4...v1.0.5
+[1.0.4]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.2...v1.0.3
+[1.0.2]: https://github.com/GulomovCreative/vscode-modx/releases/tag/v1.0.2

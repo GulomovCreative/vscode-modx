@@ -72,6 +72,26 @@ const items = await complete(variables, '{set $tpl = 1}\n{$‸}', 'fenom');
 assert.ok(labels(items).includes('$tpl'));
 ```
 
+## Releases
+
+Versions are tagged `v1.0.6`, and every tag has a release whose body is the
+matching `CHANGELOG.md` section — the two must not drift.
+
+1. Move everything under `Unreleased` into a new version heading, and add the
+   compare link at the bottom of the file.
+2. Bump `version` in `package.json`, commit as `Release 1.1.0`.
+3. Tag the commit and push it:
+
+   ```sh
+   git tag -a v1.1.0 -m "Release 1.1.0"
+   git push origin master --follow-tags
+   ```
+
+4. Publish: `npm run publish`. `vscode:prepublish` syncs the grammars and
+   minifies the bundle, so the package always carries the grammar versions the
+   lock file pins.
+5. Create the GitHub release on the tag with the same notes.
+
 ## Commits and pull requests
 
 One change per pull request. The commit subject says what changed in the
