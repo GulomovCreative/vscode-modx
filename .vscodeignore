@@ -7,3 +7,4 @@ src/**
 .eslintrc.js
 node_modules
 out/**
+.github/workflows/**
