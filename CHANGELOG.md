@@ -100,7 +100,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.2]
 
-First published release.
+Earliest release this changelog covers. `1.0.1` reached the Marketplace the
+same day from a working tree that was never committed, so there is nothing here
+to describe it with and no commit to tag.
 
 ### Added
 
