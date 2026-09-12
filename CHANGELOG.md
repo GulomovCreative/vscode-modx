@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Paths to template files are built as URIs from the workspace folder rather
+  than as strings through `node:path` and `Uri.file`. The scheme is inherited,
+  so `@FILE` completion, Go to Definition and block names from `{extends}` will
+  work in a virtual workspace, where files live under `vscode-vfs:` and there is
+  no disk to address.
 - Descriptions come from the editor's own `vscode.l10n` instead of a bundle the
   extension read from disk itself. One step towards running in a virtual
   workspace, where there is no disk to read: `node:fs` ran at module load, so

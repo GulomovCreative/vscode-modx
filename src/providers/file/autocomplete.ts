@@ -13,7 +13,6 @@ import {
   languages,
 } from 'vscode';
 
-import { join } from 'node:path';
 import { MainCompletionProvider, type Context } from '../autocomplete';
 import { SELECTORS, RETRIGGER_COMMAND } from '../../common';
 
@@ -45,8 +44,13 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
 
     const allowedExtensions = this.isSnippetCall(context) ? ['php'] : ['tpl', 'html'];
 
-    const path = this.getPath(input, document);
-    const childrenOfPath = await this.getChildrenOfPath(path, allowedExtensions, token);
+    const directory = this.getDirectory(input, document);
+
+    if (!directory) {
+      return [];
+    }
+
+    const childrenOfPath = await this.getChildrenOfPath(directory, allowedExtensions, token);
 
     if (token?.isCancellationRequested) {
       return [];
@@ -67,11 +71,9 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
     return item;
   }
 
-  async getChildrenOfPath(path: string, allowedExtensions: string[], token?: CancellationToken) {
+  async getChildrenOfPath(directory: Uri, allowedExtensions: string[], token?: CancellationToken) {
     try {
-      const filesTubles = await workspace.fs.readDirectory(
-        Uri.file(path)
-      );
+      const filesTubles = await workspace.fs.readDirectory(directory);
 
       const files = filesTubles
         .map((fileTuble) => fileTuble[0])
@@ -84,7 +86,7 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
           return fileInfoList;
         }
 
-        const fileStat = await workspace.fs.stat(Uri.file(join(path, file)));
+        const fileStat = await workspace.fs.stat(Uri.joinPath(directory, file));
         const documentExtension = this.getDocumentExtension(file, fileStat);
         if (documentExtension && !allowedExtensions.includes(documentExtension)) {
           continue;
@@ -111,13 +113,20 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
     return fragments[fragments.length - 1];
   }
 
-  getPath(input: string, document: TextDocument): string {
-    const elementsPath = getElementsPath(document);
-    const pathArr = input.replace(/^[/\\]+/, '').split('/');
-    pathArr.pop();
-    const relative = pathArr.join('/');
+  /** Каталог, содержимое которого перечисляется: путь без последнего сегмента. */
+  getDirectory(input: string, document: TextDocument): Uri | undefined {
+    const base = getElementsUri(document);
 
-    return relative ? join(elementsPath, relative) : elementsPath;
+    if (!base) {
+      return undefined;
+    }
+
+    // Последний сегмент — то, что сейчас набирают, каталогом он ещё не стал.
+    // Пустой сегмент после этого остаётся у "a/", и это как раз каталог "a".
+    const parts = input.replace(/^[/\\]+/, '').split(/[/\\]/);
+    parts.pop();
+
+    return Uri.joinPath(base, ...parts.filter(Boolean));
   }
 
   isSnippetCall(context: Context): boolean {
@@ -136,21 +145,33 @@ class FileCompletionProvider extends MainCompletionProvider implements Completio
   }
 }
 
-export function getElementsPath(document: TextDocument): string {
+/** Сегменты пути, пригодные для Uri.joinPath: без ведущего слэша и пустых. */
+export function pathSegments(input: string): string[] {
+  return input.replace(/^[/\\]+/, '').split(/[/\\]/).filter(Boolean);
+}
+
+/**
+ * Каталог элементов как Uri, а не как путь.
+ *
+ * Схема наследуется от рабочей области: в обычном проекте это `file:`, в
+ * виртуальной области — `vscode-vfs:`. Uri.file() прибил бы схему намертво, и
+ * в github.dev провайдер искал бы файлы на несуществующем диске.
+ */
+export function getElementsUri(document: TextDocument): Uri | undefined {
   const config = workspace.getConfiguration('vscode-modx');
   const elementsPath = config.get<string>('elementsPath')?.trim() ?? '';
-  const workspaceFolder = workspace.getWorkspaceFolder(document.uri);
-  const root = workspaceFolder?.uri.fsPath || '';
+  const root = workspace.getWorkspaceFolder(document.uri)?.uri;
 
-  // Empty, "/", or "." means the workspace / project root.
+  if (!root) {
+    return undefined;
+  }
+
+  // Пустое значение, "/" или "." — корень рабочей области.
   if (!elementsPath || elementsPath === '/' || elementsPath === '.') {
     return root;
   }
 
-  // elementsPath is configured with a leading slash (default: /core/elements/).
-  // Use join with a relative segment so an absolute second argument does not
-  // discard the workspace root on POSIX.
-  return join(root, elementsPath.replace(/^[/\\]+/, ''));
+  return Uri.joinPath(root, ...pathSegments(elementsPath));
 }
 
 export function createContext(

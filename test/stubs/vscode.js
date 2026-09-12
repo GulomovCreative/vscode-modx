@@ -124,7 +124,13 @@ const languages = {
 let workspaceState = { configuration: {}, folder: undefined, files: new Map() };
 
 function setWorkspace(state) {
-  workspaceState = { configuration: {}, folder: undefined, files: new Map(), ...state };
+  const files = new Map();
+
+  for (const [key, value] of state.files ?? []) {
+    files.set(key.includes('://') ? key : 'file://' + key, value);
+  }
+
+  workspaceState = { configuration: {}, folder: undefined, ...state, files };
 }
 
 const workspace = {
@@ -137,43 +143,77 @@ const workspace = {
   },
   fs: {
     async readDirectory(uri) {
-      const entry = workspaceState.files.get(uri.fsPath);
+      const entry = workspaceState.files.get(uri.toString());
       if (!entry || entry.type !== FileType.Directory) {
-        throw new Error('ENOENT: ' + uri.fsPath);
+        throw new Error('ENOENT: ' + uri.toString());
       }
       return entry.children;
     },
     async stat(uri) {
-      const entry = workspaceState.files.get(uri.fsPath);
+      const entry = workspaceState.files.get(uri.toString());
       if (!entry) {
-        throw new Error('ENOENT: ' + uri.fsPath);
+        throw new Error('ENOENT: ' + uri.toString());
       }
       return { type: entry.type, ctime: 0, mtime: 0, size: 0 };
     },
     async readFile(uri) {
-      const entry = workspaceState.files.get(uri.fsPath);
+      const entry = workspaceState.files.get(uri.toString());
       if (!entry || entry.type !== FileType.File) {
-        throw new Error('ENOENT: ' + uri.fsPath);
+        throw new Error('ENOENT: ' + uri.toString());
       }
       return Buffer.from(entry.content ?? '', 'utf8');
     },
   },
 };
 
-const Uri = {
-  // Редактор нормализует путь, поэтому /a/b/ и /a/b — один и тот же ресурс.
-  // Без этого стаб расходится с реальностью: getPath() отдаёт путь с хвостовым
-  // слэшем, и поиск по точному совпадению не находил бы каталог.
-  file(fsPath) {
-    const normalized = fsPath.length > 1 ? fsPath.replace(/[/\\]+$/, '') || '/' : fsPath;
+// Редактор нормализует путь, поэтому /a/b/ и /a/b — один и тот же ресурс.
+// Без этого стаб расходится с реальностью: путь каталога приходит с хвостовым
+// слэшем, и поиск по точному совпадению не находил бы его.
+function createUri(scheme, authority, path) {
+  const normalized = path.length > 1 ? path.replace(/\/+$/, '') || '/' : path;
 
-    return {
-      scheme: 'file',
-      fsPath: normalized,
-      path: normalized,
-      toString: () => 'file://' + normalized,
-    };
+  return {
+    scheme,
+    authority,
+    path: normalized,
+    fsPath: normalized,
+    toString: () => scheme + '://' + authority + normalized,
+  };
+}
+
+// Как posix.join у настоящего Uri.joinPath: сегменты склеиваются, "." и пустые
+// отбрасываются, ".." поднимается на уровень вверх.
+function joinSegments(base, segments) {
+  const parts = [];
+
+  for (const piece of [base, ...segments].join('/').split('/')) {
+    if (!piece || piece === '.') {
+      continue;
+    }
+
+    if (piece === '..') {
+      parts.pop();
+      continue;
+    }
+
+    parts.push(piece);
+  }
+
+  return '/' + parts.join('/');
+}
+
+const Uri = {
+  file: (fsPath) => createUri('file', '', String(fsPath).replace(/\\/g, '/')),
+
+  parse(value) {
+    const [ , scheme = 'file', authority = '', path = '/' ] = /^([a-z][\w+.-]*):\/\/([^/]*)(.*)$/i.exec(value) || [];
+
+    return createUri(scheme, authority, path || '/');
   },
+
+  // Схема и authority наследуются от базы: ради этого провайдеры и перешли на
+  // Uri вместо путей, так что стаб обязан вести себя так же.
+  joinPath: (base, ...segments) => createUri(base.scheme, base.authority, joinSegments(base.path, segments)),
 };
 
 const env = { language: 'en' };

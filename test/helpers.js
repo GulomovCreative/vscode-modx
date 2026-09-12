@@ -149,7 +149,9 @@ class TextDocument {
     this._lines = text.split('\n');
     this._text = text;
     this.languageId = languageId;
-    this.uri = vscode.Uri.file(fsPath);
+    // Со схемой — виртуальная рабочая область (github.dev), без неё — обычный
+    // файл на диске.
+    this.uri = fsPath.includes('://') ? vscode.Uri.parse(fsPath) : vscode.Uri.file(fsPath);
     this.lineCount = this._lines.length;
     // Версия растёт при каждой правке; кеш разбора документа завязан на неё.
     this.version = 1;
