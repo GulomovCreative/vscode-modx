@@ -331,7 +331,7 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
               typeof defaultValue === 'undefined'
               && name
             ) {
-              let str = `\${${result.length}:${name}}`;
+              let str = `\${${result.length + 1}:${name}}`;
 
               if (type === 'string') {
                 str = `'${str}'`;
