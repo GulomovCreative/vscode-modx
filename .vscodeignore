@@ -4,8 +4,9 @@ src/**
 **/*.ts
 **/*.map
 **/tsconfig.json
-.eslintrc.js
+eslint.config.js
 node_modules
 out/**
 .github/workflows/**
 test/**
+scripts/**

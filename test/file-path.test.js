@@ -117,3 +117,64 @@ describe('@FILE: пути к файлам', () => {
     });
   });
 });
+
+// F-08: выражение применялось без флага g, а позиция пути вычислялась через
+// lastIndexOf, поэтому при двух биндингах в строке подсказки брались от первого,
+// а диапазон — от последнего совпадения подстроки.
+describe('@FILE: несколько биндингов в одной строке', () => {
+  let completion;
+  let definition;
+
+  before(async () => {
+    completion = await getProvider({ language: 'modx', triggerCharacters: [':', '/'] });
+    definition = await getProvider({ language: 'modx', kind: 'definition' });
+  });
+
+  beforeEach(() => vscode.setWorkspace(tree('/core/elements/')));
+
+  test('подсказки берутся от того биндинга, где стоит курсор', async () => {
+    const first = labels(await complete(
+      completion,
+      '[[$x? &tpl=`@FILE ‸` &tplWrapper=`@FILE snippets/`]]',
+      'modx',
+    ));
+    const second = labels(await complete(
+      completion,
+      '[[$x? &tpl=`@FILE chunks/` &tplWrapper=`@FILE ‸`]]',
+      'modx',
+    ));
+
+    assert.ok(first.includes('base.tpl'), 'первый биндинг: корень elements');
+    assert.deepEqual(second.sort(), ['base.tpl', 'chunks', 'snippets'], 'второй биндинг: тоже корень');
+  });
+
+  test('во втором биндинге раскрывается его собственный каталог', async () => {
+    const items = labels(await complete(
+      completion,
+      '[[$x? &tpl=`@FILE base.tpl` &tplWrapper=`@FILE chunks/‸`]]',
+      'modx',
+    ));
+
+    assert.deepEqual(items.sort(), ['card.html', 'item.tpl']);
+  });
+
+  test('переход ведёт к файлу того биндинга, где стоит курсор', () => {
+    const { document, position } = documentWithCursor(
+      '[[$x? &tpl=`@FILE base.tpl` &tplWrapper=`@FILE chunks/item.tpl‸`]]',
+      'modx',
+    );
+    const [link] = definition.provideDefinition(document, position);
+
+    assert.equal(link.targetUri.fsPath, `${ROOT}/core/elements/chunks/item.tpl`);
+  });
+
+  test('вне пути биндинга подсказок нет', async () => {
+    const items = labels(await complete(
+      completion,
+      '[[$x? &tpl=`@FILE base.tpl` &limit=`‸10`]]',
+      'modx',
+    ));
+
+    assert.deepEqual(items, []);
+  });
+});

@@ -81,13 +81,14 @@ async function getProvider({ language, triggerCharacters, kind = 'completion', i
   return matches[index].provider;
 }
 
-// Схемы нужны тестам как данные, а не через провайдеры: собираются тем же
-// esbuild с теми же стабами, чтобы списки были ровно те, что видит расширение.
-let schemas;
+// Часть модулей нужна тестам напрямую, а не через провайдеры: схемы как данные,
+// утилиты как функции. Собираются тем же esbuild с теми же стабами, чтобы это
+// был ровно тот код, который попадает в расширение.
+let source;
 
-async function loadSchemas() {
-  if (schemas) {
-    return schemas;
+async function loadSource() {
+  if (source) {
+    return source;
   }
 
   const entry = [
@@ -98,6 +99,7 @@ async function loadSchemas() {
     "export { fieldPrefixes, globalArrays } from './src/schemas/fastfield';",
     "export { modxModifiers, fenomModifiers } from './src/schemas/modifiers';",
     "export { snippets } from './src/schemas/snippets/';",
+    "export { inRange, toPath } from './src/utils';",
   ].join('\n');
 
   const result = await build({
@@ -121,9 +123,9 @@ async function loadSchemas() {
 
   const module_ = { exports: {} };
   new Function('module', 'exports', 'require', result.outputFiles[0].text)(module_, module_.exports, require);
-  schemas = module_.exports;
+  source = module_.exports;
 
-  return schemas;
+  return source;
 }
 
 class TextDocument {
@@ -133,10 +135,15 @@ class TextDocument {
     this.languageId = languageId;
     this.uri = vscode.Uri.file(fsPath);
     this.lineCount = this._lines.length;
+    // Версия растёт при каждой правке; кеш разбора документа завязан на неё.
+    this.version = 1;
+    this.getTextCalls = 0;
   }
 
   getText(range) {
     if (!range) {
+      this.getTextCalls++;
+
       return this._text;
     }
 
@@ -196,6 +203,16 @@ class TextDocument {
   }
 }
 
+// Правка документа: новый текст и следующая версия, как это делает редактор.
+function editDocument(document, text) {
+  document._text = text;
+  document._lines = text.split('\n');
+  document.lineCount = document._lines.length;
+  document.version += 1;
+
+  return document;
+}
+
 // Курсор помечается символом ‸ — так тесты читаются как шаблон. Обычная вертикальная
 // черта не годится: это оператор модификатора Fenom и разделитель значений в MODX.
 const CURSOR = '\u2038';
@@ -231,9 +248,10 @@ module.exports = {
   activate,
   complete,
   documentWithCursor,
+  editDocument,
   getProvider,
   insertText,
   labels,
-  loadSchemas,
+  loadSource,
   vscode,
 };
