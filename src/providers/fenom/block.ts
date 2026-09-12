@@ -11,8 +11,8 @@ import {
   Uri,
   languages,
   workspace,
+  l10n,
 } from 'vscode';
-import { t } from '@vscode/l10n';
 
 import { FENOM_SELECTOR, getSortText } from '../../common';
 import { FenomCompletionProvider } from './autocomplete';
@@ -67,7 +67,7 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
     const item = new CompletionItem(name, CompletionItemKind.Text);
     item.sortText = getSortText(index, name);
     item.detail = `{block '${name}'}`;
-    item.documentation = new MarkdownString(t('fenom.block.name'));
+    item.documentation = new MarkdownString(l10n.t('fenom.block.name'));
     item.insertText = name;
 
     return item;

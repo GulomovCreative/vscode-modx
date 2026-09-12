@@ -1,5 +1,4 @@
-import { CompletionItem, CompletionItemKind, CompletionItemProvider, MarkdownString, Position, SnippetString, TextDocument, languages } from 'vscode';
-import { t } from '@vscode/l10n';
+import { CompletionItem, CompletionItemKind, CompletionItemProvider, MarkdownString, Position, SnippetString, TextDocument, languages, l10n } from 'vscode';
 import { FenomCompletionProvider } from './autocomplete';
 import { getSortText } from '../../common';
 
@@ -54,10 +53,10 @@ class FenomModifierProvider extends FenomCompletionProvider implements Completio
     const item = new CompletionItem(name, CompletionItemKind.Method);
     item.sortText = getSortText(index, name);
 
-    item.documentation = new MarkdownString(t(`fenom.modifier.${Array.isArray(mod.name) ? mod.name[0] : mod.name}`));
+    item.documentation = new MarkdownString(l10n.t(`fenom.modifier.${Array.isArray(mod.name) ? mod.name[0] : mod.name}`));
     if (mod.link) {
       item.documentation.appendMarkdown(`\n\n`);
-      item.documentation.appendMarkdown(`[${t('reference')}](${mod.link})`);
+      item.documentation.appendMarkdown(`[${l10n.t('reference')}](${mod.link})`);
     }
 
     let body = ' ' + name;
@@ -125,7 +124,7 @@ class FenomConfigModifierProvider extends FenomCompletionProvider implements Com
 
     return systemSettings.map(setting => {
       const item = new CompletionItem(setting, CompletionItemKind.Property);
-      item.documentation = new MarkdownString(t(`setting.${setting}`));
+      item.documentation = new MarkdownString(l10n.t(`setting.${setting}`));
       item.detail = `{'${setting}' | ${modifier || 'option'}}`;
       item.sortText = `z${setting}`;
 

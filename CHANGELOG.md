@@ -8,6 +8,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Descriptions come from the editor's own `vscode.l10n` instead of a bundle the
+  extension read from disk itself. One step towards running in a virtual
+  workspace, where there is no disk to read: `node:fs` ran at module load, so
+  the extension could not even start in a browser host.
 - Fenom re-indents while a tag is typed again. The grammar package declares
   indentation rules once more, and they now cover every block tag Fenom closes:
   `{var}`, `{set}` and `{add}` in their block form but not when they carry an

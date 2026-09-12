@@ -1,5 +1,4 @@
-import { TextDocument, Position, CompletionItemProvider, CompletionItem, MarkdownString, SnippetString, CompletionItemTag, Range, CompletionItemKind, languages } from 'vscode';
-import { t } from '@vscode/l10n';
+import { TextDocument, Position, CompletionItemProvider, CompletionItem, MarkdownString, SnippetString, CompletionItemTag, Range, CompletionItemKind, languages, l10n } from 'vscode';
 
 import { FenomCompletionProvider } from './autocomplete';
 import { FENOM_SELECTOR } from '../../common';
@@ -140,19 +139,19 @@ export const tags: Tag[] = [
     name: 'unset',
     body: '{unset $${1:variable}}',
   },
-].map(data => ({ ...data, description: t(`fenom.tag.${data.name}`) }));
+].map(data => ({ ...data, description: l10n.t(`fenom.tag.${data.name}`) }));
 
 export const snippets: Tag[] = [
   {
     name: 'set',
     body: '{set $${1:name}}\n\t$0\n{/set}',
-    description: t('fenom.snippet.set block'),
+    description: l10n.t('fenom.snippet.set block'),
     kind: CompletionItemKind.Snippet,
   },
   {
     name: 'ifelse',
     body: '{if ${1:condition}}\n\t$2\n{else}\n\t$3\n{/if}',
-    description: t('fenom.snippet.ifelse'),
+    description: l10n.t('fenom.snippet.ifelse'),
     kind: CompletionItemKind.Snippet,
   },
 ];
@@ -160,11 +159,11 @@ export const snippets: Tag[] = [
 export const options = [
   {
     name: 'raw',
-    description: t('fenom.option.raw'),
+    description: l10n.t('fenom.option.raw'),
   },
   {
     name: 'ignore',
-    description: t('fenom.option.ignore'),
+    description: l10n.t('fenom.option.ignore'),
   },
 ];
 

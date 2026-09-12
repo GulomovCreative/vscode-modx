@@ -7,7 +7,6 @@ const { Position, Range, DEFAULT_WORD_PATTERN } = vscode;
 const ROOT = path.resolve(__dirname, '..');
 const STUBS = {
   vscode: path.join(__dirname, 'stubs', 'vscode.js'),
-  '@vscode/l10n': path.join(__dirname, 'stubs', 'l10n.js'),
 };
 
 let activated;

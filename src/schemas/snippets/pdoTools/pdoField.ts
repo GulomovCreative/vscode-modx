@@ -1,4 +1,4 @@
-import { t } from '@vscode/l10n';
+import { l10n } from 'vscode';
 import type { SnippetData, SnippetProp } from '../../../schemas/snippets/';
 
 export const name = 'pdoField';
@@ -9,7 +9,7 @@ export const props: SnippetProp[] = [
     type: 'number',
     default: {
       type: 'text',
-      value: t(`${name}.prop.id.default`),
+      value: l10n.t(`${name}.prop.id.default`),
     },
   },
   {
