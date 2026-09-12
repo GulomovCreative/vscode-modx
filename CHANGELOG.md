@@ -15,6 +15,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Block name suggestions in Fenom. Names are collected from `{block '…'}` in the
   current file and in templates reached through `{extends}` and `{use}`, and are
   offered inside `{paste '…'}`, `{block '…'}` and `{$.block.…}`.
+- `Format Document` and `Format Selection` for both languages. Only leading
+  whitespace changes, and comments, `{ignore}`, `<pre>`, `<textarea>`, `<script>`
+  and `<style>` are left untouched.
+
+### Changed
+
+- Grammars and the Fenom language configuration are taken from their own
+  packages, so a grammar fix reaches the extension with a version bump.
+- Setting descriptions render as markdown instead of raw HTML, which the
+  suggestion popup showed as tags.
+- The extension is bundled into `dist/` without `lodash` and `json5`, and the
+  screenshots are requantised: the package went from 4.77 MB to 1.28 MB.
 
 ### Fixed
 
@@ -25,6 +37,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   may be `/`, `.` or empty.
 - `[[- … ]]` comments stop highlighting at the next `]]` rather than at the end
   of the line, and a tag inside a comment is no longer highlighted as code.
+- `.html` files keep the built-in HTML mode, so `Open with Live Server`, Emmet
+  and everything else keyed on `resourceLangId == html` stays available. Point
+  `files.associations` at the templates you do store as `.html`.
+- Russian descriptions of the system settings were shifted by one key: the name
+  and the explanation shown for a setting belonged to its neighbour.
+- Fenom suggestions keep the surrounding tags in order after an unpaired
+  closing tag, so `{else}` and `{continue}` are still offered further down the
+  file.
+- Snippet props are suggested inside `$_modx->runSnippet()`.
+- Method argument tabstops start at the first argument instead of leaving the
+  cursor at the end of the call.
+- `FormIt` no longer lists `redirectTo` twice.
+- The binding under the cursor is parsed rather than the first one on the line,
+  so `@FILE` paths complete in a tag that holds several of them.
+- Suggestions no longer leak between documents or between requests in flight at
+  the same time.
 
 ## [1.0.6]
 
