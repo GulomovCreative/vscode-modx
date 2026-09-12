@@ -3,10 +3,11 @@
   "scopeName": "text.html.modx",
   "fileTypes": [
     "tpl",
-    "html"
+    "html",
+    "htm"
   ],
   "injections": {
-    "L:text.html.modx": {
+    "L:text.html.modx - comment.block.modx": {
       "patterns": [
         {
           "include": "#interpolation"
@@ -24,7 +25,6 @@
   ],
   "repository": {
     "interpolation": {
-      "name": "source.modx",
       "patterns": [
         {
           "include": "#comment"
@@ -34,28 +34,235 @@
         },
         {
           "include": "#timing-tags"
-        },
-        {
-          "include": "#integer"
         }
       ]
     },
     "main": {
-      "begin": "(\\[\\[)(!?)([\\x{0025}\\x{002a}\\x{007e}\\$]?\\+{0,2})([-_a-zA-Z0-9\\.]*)",
+      "patterns": [
+        {
+          "include": "#tag-setting"
+        },
+        {
+          "include": "#tag-placeholder"
+        },
+        {
+          "include": "#tag-chunk"
+        },
+        {
+          "include": "#tag-field"
+        },
+        {
+          "include": "#tag-link"
+        },
+        {
+          "include": "#tag-lexicon"
+        },
+        {
+          "include": "#tag-snippet"
+        }
+      ]
+    },
+    "tag-setting": {
+      "name": "meta.tag.setting.modx",
+      "begin": "(\\[\\[)(!?)(\\+\\+)([-_a-zA-Z0-9\\.]*)",
       "beginCaptures": {
         "1": {
           "name": "punctuation.definition.tag.begin.modx"
         },
         "2": {
-          "name": "constant.other.key.modx"
+          "name": "keyword.control.uncached.modx"
         },
         "3": {
-          "name": "support.type.modx"
+          "name": "support.type.setting.modx"
         },
         "4": {
+          "name": "variable.other.setting.modx"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#tag-body"
+        }
+      ],
+      "end": "(\\]\\])|(?=^[ \\t]*$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.modx"
+        }
+      }
+    },
+    "tag-placeholder": {
+      "name": "meta.tag.placeholder.modx",
+      "begin": "(\\[\\[)(!?)(\\+)([-_a-zA-Z0-9\\.]*)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.modx"
+        },
+        "2": {
+          "name": "keyword.control.uncached.modx"
+        },
+        "3": {
+          "name": "support.type.placeholder.modx"
+        },
+        "4": {
+          "name": "variable.other.placeholder.modx"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#tag-body"
+        }
+      ],
+      "end": "(\\]\\])|(?=^[ \\t]*$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.modx"
+        }
+      }
+    },
+    "tag-chunk": {
+      "name": "meta.tag.chunk.modx",
+      "begin": "(\\[\\[)(!?)(\\$)([-_a-zA-Z0-9\\.]*)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.modx"
+        },
+        "2": {
+          "name": "keyword.control.uncached.modx"
+        },
+        "3": {
+          "name": "support.type.chunk.modx"
+        },
+        "4": {
+          "name": "entity.name.type.chunk.modx"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#tag-body"
+        }
+      ],
+      "end": "(\\]\\])|(?=^[ \\t]*$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.modx"
+        }
+      }
+    },
+    "tag-field": {
+      "name": "meta.tag.field.modx",
+      "begin": "(\\[\\[)(!?)(\\*#?)([-_a-zA-Z0-9\\.]*)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.modx"
+        },
+        "2": {
+          "name": "keyword.control.uncached.modx"
+        },
+        "3": {
+          "name": "support.type.field.modx"
+        },
+        "4": {
+          "name": "variable.other.resource.modx"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#tag-body"
+        }
+      ],
+      "end": "(\\]\\])|(?=^[ \\t]*$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.modx"
+        }
+      }
+    },
+    "tag-link": {
+      "name": "meta.tag.link.modx",
+      "begin": "(\\[\\[)(!?)(\\~)([-_a-zA-Z0-9\\.]*)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.modx"
+        },
+        "2": {
+          "name": "keyword.control.uncached.modx"
+        },
+        "3": {
+          "name": "support.type.link.modx"
+        },
+        "4": {
+          "name": "constant.other.link.modx"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#tag-body"
+        }
+      ],
+      "end": "(\\]\\])|(?=^[ \\t]*$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.modx"
+        }
+      }
+    },
+    "tag-lexicon": {
+      "name": "meta.tag.lexicon.modx",
+      "begin": "(\\[\\[)(!?)(\\%)([-_a-zA-Z0-9\\.]*)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.modx"
+        },
+        "2": {
+          "name": "keyword.control.uncached.modx"
+        },
+        "3": {
+          "name": "support.type.lexicon.modx"
+        },
+        "4": {
+          "name": "variable.other.lexicon.modx"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#tag-body"
+        }
+      ],
+      "end": "(\\]\\])|(?=^[ \\t]*$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.modx"
+        }
+      }
+    },
+    "tag-snippet": {
+      "name": "meta.tag.snippet.modx",
+      "begin": "(\\[\\[)(!?)\\s*(?=[-_a-zA-Z0-9.]|\\[\\[)([-_a-zA-Z0-9\\.]*)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.modx"
+        },
+        "2": {
+          "name": "keyword.control.uncached.modx"
+        },
+        "3": {
           "name": "entity.name.function.modx"
         }
       },
+      "patterns": [
+        {
+          "include": "#tag-body"
+        }
+      ],
+      "end": "(\\]\\])|(?=^[ \\t]*$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.end.modx"
+        }
+      }
+    },
+    "tag-body": {
       "patterns": [
         {
           "include": "#propertyset"
@@ -70,78 +277,157 @@
           "include": "#value"
         },
         {
-          "patterns": [
-            {
-              "match": "\\?",
-              "name": "punctuation.modx"
-            }
-          ]
+          "match": "\\?",
+          "name": "punctuation.separator.properties.modx"
+        },
+        {
+          "include": "#integer"
+        },
+        {
+          "include": "#unquoted-value"
         }
-      ],
-      "end": "(\\]\\])",
-      "endCaptures": {
-        "1": {
-          "name": "punctuation.definition.tag.end.modx"
-        }
-      }
+      ]
     },
     "propertyset": {
       "patterns": [
         {
-          "match": "@[-_a-zA-Z0-9\\.]+",
-          "name": "entity.name.modx"
+          "match": "(@)([-_a-zA-Z0-9\\.]+)",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.propertyset.modx"
+            },
+            "2": {
+              "name": "entity.name.type.propertyset.modx"
+            }
+          }
         }
       ]
     },
     "modifier": {
       "patterns": [
         {
-          "match": "(:[-_a-zA-Z0-9\\.]+)",
-          "name": "modifier.modx"
+          "match": "(:)([-_a-zA-Z0-9\\.]+)\\s*(\\=)?",
+          "captures": {
+            "1": {
+              "name": "punctuation.separator.modifier.modx"
+            },
+            "2": {
+              "name": "support.function.modifier.modx"
+            },
+            "3": {
+              "name": "keyword.operator.assignment.modx"
+            }
+          }
         }
       ]
     },
     "attribute": {
       "patterns": [
         {
-          "begin": "\\&",
-          "name": "keyword.other.modx",
-          "contentName": "variable.object.property.modx",
-          "end": "\\="
+          "match": "(\\&)(amp;)?\\s*([-_a-zA-Z0-9\\.]+)\\s*(\\=)?",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.parameter.modx"
+            },
+            "2": {
+              "name": "punctuation.definition.parameter.modx"
+            },
+            "3": {
+              "name": "variable.parameter.modx"
+            },
+            "4": {
+              "name": "keyword.operator.assignment.modx"
+            }
+          }
         }
       ]
     },
     "value": {
       "patterns": [
         {
+          "name": "string.other.modx",
           "begin": "\\`",
-          "name": "constant.character.escape",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.modx"
+            }
+          },
           "patterns": [
             {
+              "match": "``",
+              "name": "constant.character.escape.modx"
+            },
+            {
               "include": "#interpolation"
+            },
+            {
+              "include": "#integer"
             }
           ],
-          "end": "\\`"
+          "end": "\\`",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.modx"
+            }
+          },
+          "applyEndPatternLast": true
         }
       ]
     },
     "comment": {
       "patterns": [
         {
+          "name": "comment.block.modx",
           "begin": "\\[\\[\\-\\s?",
-          "name": "comment.modx",
-          "contentName": "comment.modx",
-          "end": "\\]\\]$"
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.begin.modx"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#nested-tag"
+            }
+          ],
+          "end": "\\]\\]|(?=^[ \\t]*$)",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.end.modx"
+            }
+          }
+        }
+      ]
+    },
+    "nested-tag": {
+      "patterns": [
+        {
+          "begin": "\\[\\[",
+          "end": "\\]\\]",
+          "patterns": [
+            {
+              "include": "#nested-tag"
+            }
+          ]
         }
       ]
     },
     "timing-tags": {
       "patterns": [
         {
-          "begin": "\\[\\^",
-          "name": "punctuation.modx",
-          "contentName": "string",
-          "end": "\\^\\]"
+          "name": "meta.tag.timing.modx",
+          "begin": "(\\[\\^)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.tag.begin.modx"
+            }
+          },
+          "contentName": "constant.other.timing.modx",
+          "end": "(\\^\\])|(?=^[ \\t]*$)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.tag.end.modx"
+            }
+          }
         }
       ]
     },
@@ -150,6 +436,14 @@
         {
           "name": "constant.numeric.modx",
           "match": "[+-]?\\b[0-9][0-9]*(?:\\.[0-9][0-9]*)?(?:[eE][+-]?[0-9]+)?\\b"
+        }
+      ]
+    },
+    "unquoted-value": {
+      "patterns": [
+        {
+          "match": "(?<=\\=)[^\\s`\\]&]+",
+          "name": "string.unquoted.modx"
         }
       ]
     }

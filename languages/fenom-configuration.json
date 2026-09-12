@@ -1,35 +1,28 @@
 {
   "comments": {
-    "blockComment": [ "{*", "*}" ]
+    "blockComment": ["{*", "*}"]
   },
   "brackets": [
     ["{", "}"],
     ["[", "]"],
-    ["(", ")"]
+    ["(", ")"],
+    ["<", ">"]
   ],
   "autoClosingPairs": [
-    ["{", "}"],
-    ["[", "]"],
-    ["(", ")"],
+    { "open": "{*", "close": " *}" },
+    { "open": "{", "close": "}" },
+    { "open": "[", "close": "]" },
+    { "open": "(", "close": ")" },
+    { "open": "\"", "close": "\"", "notIn": ["string", "comment"] },
     { "open": "'", "close": "'", "notIn": ["string", "comment"] },
-    { "open": "\"", "close": "\"", "notIn": ["string"] },
-    { "open": "`", "close": "`", "notIn": ["string", "comment"] }
+    { "open": "<!--", "close": "-->", "notIn": ["comment", "string"] }
   ],
   "surroundingPairs": [
     ["{", "}"],
     ["[", "]"],
     ["(", ")"],
     ["\"", "\""],
-    ["'", "'"]
-  ],
-  "folding": {
-    "markers": {
-      "start": "\\{%?",
-      "end": "%?\\}"
-    }
-  },
-  "indentationRules": {
-    "increaseIndentPattern": "{{?(block|else|elseif|for|foreach|foreachelse|if)\\b.*}}?",
-    "decreaseIndentPattern": "{{?/(block|for|foreach|if)\\b}}?"
-  }
+    ["'", "'"],
+    ["<", ">"]
+  ]
 }

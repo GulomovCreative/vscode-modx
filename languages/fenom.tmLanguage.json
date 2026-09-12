@@ -4,10 +4,13 @@
   "scopeName": "text.html.fenom",
   "fileTypes": ["tpl"],
   "injections": {
-    "L:text.html.fenom -meta.embedded.literal -comment.block.fenom": {
+    "L:text.html.fenom -meta.embedded.literal -comment.block.fenom -string.quoted.single.fenom -string.quoted.double.fenom": {
       "patterns": [
         {
-          "include": "#nonFenom"
+          "include": "#ignore"
+        },
+        {
+          "include": "#ignoreOption"
         },
         {
           "include": "#comments"
@@ -22,26 +25,71 @@
     { "include": "text.html.derivative" }
   ],
   "repository": {
-    "nonFenom": {
+    "ignore": {
+      "comment": "Everything between {ignore} and {/ignore} is emitted verbatim, so Fenom syntax inside it must not be highlighted. A begin/end rule takes over its whole region, which would leave the contents unhighlighted altogether, so the host grammar is included back explicitly -- that is what keeps the <style> element in the documented {ignore} example rendering as CSS. The content is scoped meta.embedded.literal, which this grammar's injection selector excludes, so Fenom itself does not come back with it. Comments are the one exception: Fenom's lexer handles {* *} in an earlier branch than the ignore flag, so they are still stripped inside an ignore block and are still highlighted here.",
+      "begin": "(\\{)(ignore)(\\})",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.embedded.begin.fenom" },
+        "2": { "name": "keyword.control.fenom" },
+        "3": { "name": "punctuation.section.embedded.end.fenom" }
+      },
+      "end": "(\\{)(/)(ignore)(\\})",
+      "endCaptures": {
+        "1": { "name": "punctuation.section.embedded.begin.fenom" },
+        "2": { "name": "punctuation.definition.tag.fenom" },
+        "3": { "name": "keyword.control.fenom" },
+        "4": { "name": "punctuation.section.embedded.end.fenom" }
+      },
+      "contentName": "meta.embedded.literal.fenom",
       "patterns": [
         {
-          "match": "(\\{%?)\\s"
+          "include": "#comments"
+        },
+        {
+          "include": "text.html.derivative"
+        }
+      ]
+    },
+    "ignoreOption": {
+      "comment": "A block tag carrying the :ignore option, as in {if:ignore $cdn}. Fenom stores the tag's name in Template::_ignore and emits everything verbatim until it meets the matching closing tag, so the end pattern back-references the name captured by the begin pattern. That reproduces Fenom's own limitation too: _ignore holds a plain string, so a nested tag of the same name ends the ignored region early in Fenom as well. Comments stay highlighted for the same reason as in the {ignore} tag -- the lexer handles {* *} in an earlier branch than the ignore flag. Known limitation: the tag head is matched up to the first closing brace, so a closing brace inside a string in the head, as in {if:ignore $a == \"}\"}, ends it early.",
+      "begin": "(\\{)([a-zA-Z_][a-zA-Z0-9_]*)((?::(?i:ignoreEnd|escape|raw|strip|ignore))*:(?i:ignore)\\b(?::(?i:ignoreEnd|escape|raw|strip|ignore))*)([^}]*)(\\})",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.embedded.begin.fenom" },
+        "2": { "name": "keyword.control.fenom" },
+        "3": { "patterns": [{ "include": "#expression" }] },
+        "4": { "patterns": [{ "include": "#expression" }] },
+        "5": { "name": "punctuation.section.embedded.end.fenom" }
+      },
+      "end": "(\\{)(/)(\\2)(\\})",
+      "endCaptures": {
+        "1": { "name": "punctuation.section.embedded.begin.fenom" },
+        "2": { "name": "punctuation.definition.tag.fenom" },
+        "3": { "name": "keyword.control.fenom" },
+        "4": { "name": "punctuation.section.embedded.end.fenom" }
+      },
+      "contentName": "meta.embedded.literal.fenom",
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "text.html.derivative"
         }
       ]
     },
     "comments": {
-      "begin": "{{?\\*",
+      "begin": "\\{\\*",
       "beginCaptures": {
         "0": { "name": "punctuation.definition.comment.begin.fenom" }
       },
       "name": "comment.block.fenom",
-      "end": "\\*}}?",
+      "end": "\\*\\}",
       "endCaptures": {
         "0": { "name": "punctuation.definition.comment.end.fenom" }
       },
       "patterns": [
         {
-          "match": "{{?\\*",
+          "match": "\\{\\*",
           "name": "invalid.illegal.characters-not-allowed-here.fenom"
         }
       ]
@@ -49,67 +97,163 @@
     "blocks": {
       "patterns": [
         {
-          "begin": "(\\{%?)",
+          "comment": "Fenom's lexer checks the character after a brace and treats the brace as literal text when it is whitespace or a closing brace. That is expressed as a negative lookahead rather than as a rule that matches and discards \"{ \", because this grammar is injected with L: priority: a rule that matched would consume the brace before the host grammar saw it, and the CSS inside a <style> element needs that brace to open a property list. A tag is an island of Fenom inside an HTML document, so it carries meta.embedded.block alongside source.fenom: the meta scope is what marks the region as embedded, and source.fenom is kept so that anything already targeting it keeps working. Block rather than line because a tag may span several lines -- the documentation shows multi-line {include} and {foreach} tags.",
+          "begin": "(\\{)(?![\\s}])",
           "beginCaptures": {
             "1": {
                 "name": "punctuation.section.embedded.begin.fenom"
             }
           },
-          "end": "(%?\\})",
+          "end": "(\\})",
           "endCaptures": {
             "1": {
                 "name": "punctuation.section.embedded.end.fenom"
             }
           },
-          "name": "source.fenom",
+          "name": "meta.embedded.block.fenom source.fenom",
           "patterns": [
             {
-              "include": "#strings"
-            },
-            {
-              "include": "#variables"
-            },
-            {
-              "include": "#lang"
+              "include": "#expression"
             }
           ]
+        }
+      ]
+    },
+    "expression": {
+      "comment": "The body of a Fenom tag. Shared with the interpolation rule inside double-quoted strings, which accepts the same expressions.",
+      "patterns": [
+        {
+          "include": "#strings"
+        },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#variables"
+        },
+        {
+          "include": "#lang"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "match": "\\b0[xX][0-9a-fA-F]+\\b",
+          "name": "constant.numeric.hex.fenom"
+        },
+        {
+          "match": "\\b0[bB][01]+\\b",
+          "name": "constant.numeric.binary.fenom"
+        },
+        {
+          "match": "\\b\\d+\\.\\d+([eE][+-]?\\d+)?\\b|\\b\\d+[eE][+-]?\\d+\\b",
+          "name": "constant.numeric.float.fenom"
+        },
+        {
+          "match": "\\b0[0-7]+\\b",
+          "name": "constant.numeric.octal.fenom"
+        },
+        {
+          "match": "\\b\\d+\\b",
+          "name": "constant.numeric.decimal.fenom"
         }
       ]
     },
     "lang": {
       "patterns": [
         {
-          "match": "(\\|=|\\+=|-=|\\*=|\\%=|!==|=|&=|\\^=|~|/=|\\-|\\+|/ |\\*|@|!=|!|<=|>=|<|>|===|==|%|&&|\\|\\|)|\\b(and|or|xor)\\b",
-          "name": "keyword.operator.fenom"
+          "comment": "Modifiers are matched before the operators so the leading pipe is read as a modifier separator rather than as bitwise or.",
+          "captures": {
+            "1": {
+              "name": "keyword.operator.fenom"
+            },
+            "2": {
+              "name": "entity.name.function.fenom"
+            }
+          },
+          "match": "(\\|)\\s*([a-zA-Z_]+)\\b"
+        },
+        {
+          "comment": "The slash opening a closing tag, as in {/if}. Matched before the operators so it is not read as division.",
+          "match": "(?<=\\{)/",
+          "name": "punctuation.definition.tag.fenom"
+        },
+        {
+          "comment": "Tag options, as in {if:ignore $cdn} or {foreach:ignore:strip ...}. Tag::tagOption resolves an option by looking for a method named opt<Option>, so the accepted set is exactly escape, raw, strip, ignore and ignoreEnd. method_exists is case-insensitive, hence the (?i:...). The short codes s, a, e and i that the documentation tabulates are not implemented -- they would need optS and optA, which do not exist -- so they are not matched here. Listed before the operators so the colon is read as an option separator rather than as a ternary colon.",
+          "captures": {
+            "1": {
+              "name": "punctuation.separator.option.fenom"
+            },
+            "2": {
+              "name": "keyword.other.option.fenom"
+            }
+          },
+          "match": "(:)((?i:ignoreEnd|escape|raw|strip|ignore))\\b"
+        },
+        {
+          "comment": "Alternatives are ordered longest first -- all three-character operators, then all two-character, then all one-character -- so that === is one token rather than three, and <<= is not split into << and =. Operators of equal length cannot be prefixes of one another, so their relative order is free, which is what lets each length band be split into several capture groups by category. Several groups therefore share a scope. Group 10 is the concatenating tilde: a bare ~ concatenates when it sits between operands ($a ~ $b) and is bitwise not when it prefixes one (~$a), and trailing whitespace is the only thing that tells them apart, so it must be tried before group 14.",
+          "captures": {
+            "1": { "name": "keyword.operator.assignment.fenom" },
+            "2": { "name": "keyword.operator.comparison.fenom" },
+            "3": { "name": "keyword.operator.comparison.fenom" },
+            "4": { "name": "keyword.operator.logical.fenom" },
+            "5": { "name": "keyword.operator.bitwise.fenom" },
+            "6": { "name": "keyword.operator.arithmetic.fenom" },
+            "7": { "name": "keyword.operator.string.fenom" },
+            "8": { "name": "keyword.operator.assignment.fenom" },
+            "9": { "name": "keyword.operator.ternary.fenom" },
+            "10": { "name": "keyword.operator.string.fenom" },
+            "11": { "name": "keyword.operator.assignment.fenom" },
+            "12": { "name": "keyword.operator.comparison.fenom" },
+            "13": { "name": "keyword.operator.logical.fenom" },
+            "14": { "name": "keyword.operator.bitwise.fenom" },
+            "15": { "name": "keyword.operator.arithmetic.fenom" },
+            "16": { "name": "keyword.operator.fenom" }
+          },
+          "match": "(<<=|>>=)|(===|!==)|(==|!=|<>|<=|>=)|(&&|\\|\\|)|(<<|>>)|(\\+\\+|--)|(~~)|(~=|\\|=|&=|\\^=|\\+=|-=|\\*=|/=|%=)|(\\?:|!:)|(~(?=\\s))|(=)|(<|>)|(!)|(\\||&|\\^|~)|(\\+|-|\\*|/|%)|(\\?|:|@)"
+        },
+        {
+          "comment": "Test and containment operators. The compound forms are listed before their prefixes so that 'is not' does not match as a bare 'is'.",
+          "match": "\\b(is\\s+not|not\\s+in|in\\s+list|in\\s+keys|in\\s+string|is|in)\\b",
+          "name": "keyword.operator.comparison.fenom"
+        },
+        {
+          "match": "\\b(and|or|xor)\\b",
+          "name": "keyword.operator.logical.fenom"
+        },
+        {
+          "comment": "Square brackets serve both index access ($foo[5], $foo['bar']) and array literals ([1, 2, 3]).",
+          "match": "\\[",
+          "name": "punctuation.section.brackets.begin.fenom"
+        },
+        {
+          "match": "\\]",
+          "name": "punctuation.section.brackets.end.fenom"
         },
         {
           "match": "\\b(TRUE|FALSE|true|false)\\b",
           "name": "constant.language.fenom"
         },
         {
-          "match": "\\b(var|set|add|if|else|elseif|foreach|foreachelse|autoescape|autotrim|for|extends|block|use|paste|parent|filter|break|continue|forelse|ignore|include|insert|macro|import|raw|switch|case|unset)\\b",
+          "match": "\\b(var|set|add|if|else|elseif|foreach|foreachelse|autoescape|autotrim|for|extends|block|use|paste|parent|filter|break|continue|forelse|ignore|include|insert|macro|import|raw|switch|case|unset|while|do|escape|strip)\\b",
           "name": "keyword.control.fenom"
         },
         {
-        "captures": {
-          "0": {
-            "name": "variable.parameter.fenom"
-          }
-        },
-          "match": "\\b([a-zA-Z]+)=",
+          "captures": {
+            "1": {
+              "name": "variable.parameter.fenom"
+            },
+            "2": {
+              "name": "keyword.operator.fenom"
+            }
+          },
+          "match": "\\b([a-zA-Z]+)(=)",
           "name": "meta.attribute.fenom"
         },
         {
           "match": "\\b(plus|from|as|capture|default|cycle)\\b",
           "name": "support.function.built-in.fenom"
-        },
-        {
-          "captures": {
-            "0": {
-              "name": "entity.name.function.fenom"
-            }
-          },
-          "match": "\\|\\s*([a-zA-Z_]+)\\b"
         }
       ]
     },
@@ -131,7 +275,8 @@
           "name": "string.quoted.single.fenom",
           "patterns": [
             {
-              "match": "\\\\.",
+              "comment": "A single-quoted string recognises only \\' and \\\\. Every other backslash is a literal backslash, and no interpolation happens at all -- {'Hi, {$foo}'} prints the braces verbatim.",
+              "match": "\\\\['\\\\]",
               "name": "constant.character.escape.fenom"
             }
           ]
@@ -152,8 +297,40 @@
           "name": "string.quoted.double.fenom",
           "patterns": [
             {
-              "match": "\\\\.",
+              "comment": "The escape sequences a double-quoted string recognises, per the table in docs/en/syntax.md. Listed before the interpolation rules so that \\$ stays an escape and {\\$ prints a literal brace-dollar.",
+              "match": "\\\\(x[0-9A-Fa-f]{1,2}|[0-7]{1,3}|[nrtvf\\\\$\"])",
               "name": "constant.character.escape.fenom"
+            },
+            {
+              "comment": "Complex interpolation. A brace only opens an expression when a dollar sign follows it immediately, which is what makes {\\$user} and {foo} literal text.",
+              "begin": "\\{(?=\\$)",
+              "beginCaptures": {
+                "0": {
+                  "name": "punctuation.section.embedded.begin.fenom"
+                }
+              },
+              "end": "\\}",
+              "endCaptures": {
+                "0": {
+                  "name": "punctuation.section.embedded.end.fenom"
+                }
+              },
+              "name": "meta.embedded.line.fenom source.fenom",
+              "patterns": [
+                {
+                  "include": "#expression"
+                }
+              ]
+            },
+            {
+              "comment": "Simple interpolation: a bare variable name, as in \"Hi, $username!\". Anything more involved needs the braces.",
+              "captures": {
+                "1": {
+                  "name": "punctuation.definition.variable.fenom"
+                }
+              },
+              "match": "(\\$)([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+              "name": "variable.other.fenom"
             }
           ]
         }
@@ -166,25 +343,71 @@
           "name": "support.variable.fenom"
         },
         {
+          "comment": "The unnamed system variable, $.get, $.const, $.tpl and so on. The accessor name is matched by shape rather than against Fenom's built-in list, because addAccessor() lets a project register its own and a fixed list would leave those unhighlighted.",
           "captures": {
             "1": {
-              "name": "variable.language.fenom"
+              "name": "punctuation.definition.variable.fenom"
+            },
+            "2": {
+              "name": "punctuation.accessor.fenom"
+            },
+            "3": {
+              "name": "support.variable.fenom"
             }
           },
-          "match": "(\\$)\\.\\b",
+          "match": "(\\$)(\\.)([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+          "name": "variable.other.global.fenom"
+        },
+        {
+          "comment": "A bare $. with no accessor after it.",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.variable.fenom"
+            },
+            "2": {
+              "name": "punctuation.accessor.fenom"
+            }
+          },
+          "match": "(\\$)(\\.)",
           "name": "variable.other.global.fenom"
         },
         {
           "captures": {
             "1": {
               "name": "punctuation.definition.variable.fenom"
-            },
-            "2": {
-              "name": "variable.other.fenom"
             }
           },
-          "match": "(\\$)([a-zA-Z_][a-zA-Z0-9_]*)\\b|(\\$.)([a-zA-Z_.][a-zA-Z0-9_.]*)\\b",
+          "match": "(\\$)([a-zA-Z_][a-zA-Z0-9_]*)\\b",
           "name": "variable.other.fenom"
+        },
+        {
+          "comment": "Iteration properties inside {foreach}. Compiler::foreachProp accepts index, first and last and raises a CompileException for anything else, so only those three are matched; an unknown one falls through to the plain @ operator.",
+          "captures": {
+            "1": {
+              "name": "punctuation.accessor.fenom"
+            },
+            "2": {
+              "name": "support.variable.property.fenom"
+            }
+          },
+          "match": "(@)(index|first|last)\\b"
+        },
+        {
+          "comment": "Dot access, as in $user.name and $.get.debug.",
+          "captures": {
+            "1": {
+              "name": "punctuation.accessor.fenom"
+            },
+            "2": {
+              "name": "variable.other.property.fenom"
+            }
+          },
+          "match": "(\\.)([a-zA-Z_][a-zA-Z0-9_]*)\\b"
+        },
+        {
+          "comment": "Dot access with a numeric key, as in $foo.5. The digits are left to the numbers rule.",
+          "match": "\\.(?=\\d)",
+          "name": "punctuation.accessor.fenom"
         },
         {
           "captures": {

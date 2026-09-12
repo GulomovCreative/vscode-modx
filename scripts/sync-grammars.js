@@ -11,25 +11,24 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 
 const SOURCES = [
-  { package: 'modx-tmlanguage', file: 'modx.tmLanguage.json', target: 'languages/modx.tmLanguage.json' },
-  { package: 'fenom-tmlanguage', file: 'fenom.tmLanguage.json', target: 'languages/fenom.tmLanguage.json' },
+  { package: '@gulomov/modx-tmlanguage', file: 'modx.tmLanguage.json', target: 'languages/modx.tmLanguage.json' },
+  { package: '@gulomov/fenom-tmlanguage', file: 'fenom.tmLanguage.json', target: 'languages/fenom.tmLanguage.json' },
+  // Конфигурацию языка поставляет только пакет Fenom; у MODX она своя и
+  // лежит в languages/modx-configuration.json.
   {
-    package: 'fenom-tmlanguage',
+    package: '@gulomov/fenom-tmlanguage',
     file: 'language-configuration.json',
     target: 'languages/fenom-configuration.json',
-    // Пакет начал поставлять конфигурацию языка не сразу; пока её нет,
-    // используется локальная.
-    optional: true,
   },
 ];
 
 /**
  * Путь к файлу внутри пакета.
  *
- * Точка входа этих пакетов менялась: в опубликованных сейчас версиях экспорт
- * "." ведёт прямо в JSON, в следующих он вернётся к index.js, который отдаёт
- * путь строкой, и появятся подпути. Поддерживаются все три случая, чтобы
- * обновление пакета не ломало сборку.
+ * Пакеты объявляют подпути в exports, поэтому обычно срабатывает первая
+ * попытка. Запасные пути оставлены намеренно: точка входа этих пакетов уже
+ * менялась — экспорт "." вёл то прямо в JSON, то в index.js, отдающий путь
+ * строкой, — и обновление грамматики не должно ломать сборку.
  */
 function resolveFile(packageName, file) {
   try {
@@ -60,6 +59,18 @@ function resolveFile(packageName, file) {
   return fs.existsSync(sibling) ? sibling : undefined;
 }
 
+/**
+ * Переводы строк приводятся к LF.
+ *
+ * Пакеты собираются на разных машинах и часть файлов приходит с CRLF, а на
+ * Windows git может ещё раз переписать окончания при выгрузке. Без этого
+ * `--check` в CI падал бы на файлах, которые отличаются только переводом
+ * строки.
+ */
+function normalize(text) {
+  return text.replace(/\r\n/g, '\n');
+}
+
 function version(packageName) {
   try {
     return require(`${packageName}/package.json`).version;
@@ -80,16 +91,12 @@ for (const source of SOURCES) {
   const to = path.join(ROOT, source.target);
 
   if (!from) {
-    if (!source.optional) {
-      problems.push(`${source.package}: не найден ${source.file}`);
-    } else {
-      console.log(`пропущен  ${source.target}  (${source.package} пока не поставляет ${source.file})`);
-    }
+    problems.push(`${source.package}: не найден ${source.file}`);
     continue;
   }
 
-  const content = fs.readFileSync(from, 'utf8');
-  const current = fs.existsSync(to) ? fs.readFileSync(to, 'utf8') : undefined;
+  const content = normalize(fs.readFileSync(from, 'utf8'));
+  const current = fs.existsSync(to) ? normalize(fs.readFileSync(to, 'utf8')) : undefined;
 
   if (current === content) {
     console.log(`совпадает ${source.target}  (${source.package}@${version(source.package)})`);
