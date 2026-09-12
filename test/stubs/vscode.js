@@ -73,6 +73,17 @@ class SnippetString {
   }
 }
 
+class TextEdit {
+  constructor(range, newText) {
+    this.range = range;
+    this.newText = newText;
+  }
+
+  static replace(range, newText) {
+    return new TextEdit(range, newText);
+  }
+}
+
 class CompletionItem {
   constructor(label, kind) {
     this.label = label;
@@ -97,6 +108,14 @@ const languages = {
   },
   registerDefinitionProvider(selector, provider) {
     registrations.push({ kind: 'definition', selector, provider, triggerCharacters: [] });
+    return { dispose() {} };
+  },
+  registerDocumentFormattingEditProvider(selector, provider) {
+    registrations.push({ kind: 'format', selector, provider, triggerCharacters: [] });
+    return { dispose() {} };
+  },
+  registerDocumentRangeFormattingEditProvider(selector, provider) {
+    registrations.push({ kind: 'format-range', selector, provider, triggerCharacters: [] });
     return { dispose() {} };
   },
 };
@@ -180,6 +199,7 @@ module.exports = {
   Position,
   Range,
   SnippetString,
+  TextEdit,
   Uri,
   env,
   extensions,

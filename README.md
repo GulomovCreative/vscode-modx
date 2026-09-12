@@ -100,6 +100,17 @@ Note, autocomplete works with a list of predefined snippets:
 
 ![Fenom Autocomplete: @FILE binding paths](media/fenom-autocomplete-file.png)
 
+### Formatting
+
+`Format Document` and `Format Selection` re-indent templates with the block
+structure of both the markup and the template in mind: `{if}` / `{foreach}`
+nesting, `{else}` branches whose markup need not be balanced inside a branch,
+multi-line MODX property lists, and `{switch}` / `{case}`.
+
+Only leading whitespace changes. Nothing is reflowed or rewritten, and the
+contents of comments, `{ignore}` blocks, `<pre>`, `<textarea>`, `<script>` and
+`<style>` are left exactly as they are.
+
 ## Recommended VS Code Settings
 
 ### `files.associations`

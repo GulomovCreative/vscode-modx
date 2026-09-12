@@ -18,6 +18,8 @@ import { fenomSnippetModifierCompletionDisposable, fenomSnippetMethodCompletionD
 import fenomArgumentCompletionDisposable from './providers/fenom/argument';
 import fenomBlockNameCompletionDisposable from './providers/fenom/block';
 
+import { formatDocumentDisposable, formatRangeDisposable } from './providers/format';
+
 export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     modxModifierCompletionDisposable,
@@ -45,6 +47,9 @@ export async function activate(context: ExtensionContext) {
 
     fileLocationDisposable,
     fileCompletionDisposable,
+
+    formatDocumentDisposable,
+    formatRangeDisposable,
   );
 
   const htmlExtension = extensions.getExtension('vscode.html-language-features');
