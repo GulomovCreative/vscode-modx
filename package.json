@@ -131,10 +131,9 @@
 		"typecheck-watch": "tsc -p ./ --watch"
 	},
 	"devDependencies": {
-		"@types/json5": "^2.2.0",
 		"@types/lodash": "^4.14.199",
 		"@types/node": "^16.18.34",
-		"@types/vscode": "^1.73.0",
+		"@types/vscode": "^1.81.0",
 		"@typescript-eslint/eslint-plugin": "^5.42.0",
 		"@typescript-eslint/parser": "^5.42.0",
 		"@vscode/l10n-dev": "^0.0.29",
@@ -145,7 +144,6 @@
 	},
 	"dependencies": {
 		"@vscode/l10n": "^0.0.16",
-		"json5": "^2.2.3",
 		"lodash": "^4.17.21"
 	}
 }
