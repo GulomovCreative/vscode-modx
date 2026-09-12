@@ -2,16 +2,28 @@
 
 Intelligent MODX, pdoTools and fenom tooling for VS Code.
 
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/gulomov.vscode-modx?label=marketplace&logo=visualstudiocode&logoColor=white&color=0066b8)](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/gulomov.vscode-modx?color=0066b8)](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx)
+[![Rating](https://img.shields.io/visual-studio-marketplace/stars/gulomov.vscode-modx?color=0066b8)](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx&ssr=false#review-details)
+[![CI](https://github.com/GulomovCreative/vscode-modx/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/GulomovCreative/vscode-modx/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/GulomovCreative/vscode-modx?color=44cc11)](LICENSE)
+
 ![Intellisense for MODX Revolution and Fenom](.github/banner.png)
+
+## Requirements
+
+VS Code 1.81 or newer.
 
 ## Installation
 
-Plugin installation is performed in several stages:
+- Press `F1` and run `Extensions: Install Extensions`.
+- Search for `IntelliSense for MODX` and install it.
 
-- Press `F1` and select `Extensions: Install Extensions`.
-- Search and choose `vscode-modx`.
+Or [install from the Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx), or from a terminal:
 
-Or [install via the Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx).
+```sh
+code --install-extension gulomov.vscode-modx
+```
 
 ## Features
 
@@ -35,6 +47,10 @@ Suggests [fastField](https://docs.modx.com/current/en/extras/fastfield) / [pdoPa
 - TV and properties prefixes: `[[#15.tv.name]]`, `[[#15.properties.key]]`
 - PHP superglobals: `[[!#GET.key]]`, `POST`, `REQUEST`, `SERVER`, `FILES`, `COOKIE`, `SESSION`
 
+### MODX Autocomplete: Chunk tags
+
+Suggests a chunk tag after `$`: typing `$header` offers `[[$header]]`, and `!$header` offers the uncached `[[!$header]]`.
+
 ### MODX Autocomplete: Output filters/modifiers
 
 ![MODX Autocomplete: Output filters/modifiers](media/modx-autocomplete-modifiers.png)
@@ -56,6 +72,10 @@ Note, autocomplete works with a list of predefined snippets:
 
 ![MODX Autocomplete: @FILE binding paths](media/modx-autocomplete-file.png)
 
+### Go to Definition: @FILE bindings
+
+`Ctrl`/`Cmd` + click or `F12` on a path inside an `@FILE` binding opens that file. Works in both languages, and in Fenom also inside `$_modx->runSnippet('@FILE …')` and `{'@FILE …' | snippet}`.
+
 ### Fenom Syntax Highlighting
 
 ![Fenom Syntax Highlighting](media/fenom-syntax-highlighting.png)
@@ -67,6 +87,12 @@ Note, autocomplete works with a list of predefined snippets:
 ### Fenom Autocomplete: Block names
 
 Suggests names from `{block '…'}` in the current file and in templates linked via `{extends}` / `{use}`, when typing inside `{paste '…'}`, `{block '…'}`, or `{$.block.…}`. The `{block}` tag itself is also suggested without a prior `{extends}` (parent templates).
+
+### Fenom Autocomplete: `{foreach}` arguments and tag options
+
+Inside `{foreach}`, its arguments `index`, `first` and `last` are suggested, and `@` after a variable offers the same as iteration properties: `{$item@index}`.
+
+`:` right after a tag name offers the tag options `raw` and `ignore`: `{include:raw '@FILE …'}`.
 
 ### Fenom Autocomplete: Modifiers
 
@@ -82,6 +108,10 @@ Suggests names from `{block '…'}` in the current file and in templates linked 
 - Local variables
 
 ![Fenom Autocomplete: Variables](media/fenom-autocomplete-variables.png)
+
+### Fenom Autocomplete: System settings
+
+System settings are suggested inside the quotes in front of the `config` and `option` modifiers. In a bare `{'…'}` the modifier is offered together with the setting, so `{'site_name'}` completes to `{'site_name' | option}`.
 
 ### Fenom Autocomplete: Snippets and props
 
@@ -110,6 +140,18 @@ multi-line MODX property lists, and `{switch}` / `{case}`.
 Only leading whitespace changes. Nothing is reflowed or rewritten, and the
 contents of comments, `{ignore}` blocks, `<pre>`, `<textarea>`, `<script>` and
 `<style>` are left exactly as they are.
+
+## Extension Settings
+
+### `vscode-modx.elementsPath`
+
+Directory the `@FILE` paths are resolved against, relative to the workspace root. Default: `/core/elements/`.
+
+```json
+"vscode-modx.elementsPath": "/core/elements/"
+```
+
+Set it to `/`, `.`, or an empty string to browse from the project root — useful when templates live outside `core`, or when the editor is opened on the theme directory rather than on the MODX installation.
 
 ## Recommended VS Code Settings
 
