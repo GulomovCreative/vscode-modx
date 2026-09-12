@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+# Workflow только читает репозиторий: ни публикаций, ни комментариев, ни
+# записи в ветки. Явное указание закрывает запись на случай, если права по
+# умолчанию в настройках репозитория окажутся шире.
+permissions:
+  contents: read
+
+# Новый пуш в ту же ветку отменяет предыдущий прогон: держать очередь
+# проверок для кода, который уже неактуален, незачем.
+#
+# На master отмена не применяется. Там каждый коммит — состояние, из которого
+# может уйти релиз, и его результат должен быть известен.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  check:
+    name: Линт, типы и сборка
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+
+      - name: Линт
+        run: npm run lint
+
+      # tsc здесь вызывается напрямую, а не через npm-скрипт: имя скрипта
+      # для проверки типов меняется в соседнем PR, и workflow не должен
+      # зависеть от того, в каком порядке эти изменения попадут в master.
+      - name: Проверка типов
+        run: npx tsc -p ./ --noEmit
+
+      - name: Сборка бандла
+        run: npm run esbuild-base
+
+  l10n:
+    name: Локализация
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+
+      # Подсказки берут описания из бандлов локализации по ключам, которые
+      # собираются в рантайме. Отсутствующий ключ ничего не ломает — он
+      # просто отдаёт пустое описание, и заметить это можно только глазами
+      # в подсказке. Поэтому наборы ключей сверяются между языками.
+      - name: Сверить наборы ключей en и ru
+        run: |
+          node -e "
+            const fs = require('fs');
+            const read = p => Object.keys(JSON.parse(fs.readFileSync(p, 'utf8'))).sort();
+            const en = read('l10n/bundle.l10n.json');
+            const ru = read('l10n/bundle.l10n.ru.json');
+            const onlyEn = en.filter(k => !ru.includes(k));
+            const onlyRu = ru.filter(k => !en.includes(k));
+            console.log('ключей en: ' + en.length + ', ru: ' + ru.length);
+            if (onlyEn.length || onlyRu.length) {
+              if (onlyEn.length) { console.error('нет в ru:'); onlyEn.forEach(k => console.error('  ' + k)); }
+              if (onlyRu.length) { console.error('нет в en:'); onlyRu.forEach(k => console.error('  ' + k)); }
+              process.exit(1);
+            }
+            console.log('наборы ключей совпадают');
+          "

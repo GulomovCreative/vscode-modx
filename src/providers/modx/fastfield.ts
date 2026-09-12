@@ -123,7 +123,7 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
   }
 }
 
-export default languages.registerCompletionItemProvider(
+export default () => languages.registerCompletionItemProvider(
   MODX_SELECTOR,
   new ModxFastFieldCompletion(),
   '#',

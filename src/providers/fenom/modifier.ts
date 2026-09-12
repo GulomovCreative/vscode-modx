@@ -163,19 +163,14 @@ class FenomConfigModifierProvider extends FenomCompletionProvider implements Com
   }
 }
 
-export const fenomModifierCompletionDisposable = languages.registerCompletionItemProvider(
+export const registerFenomModifierCompletion = () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomModifierProvider(),
   '|'
 );
 
-export const fenomConfigModifierCompletionDisposable = languages.registerCompletionItemProvider(
+export const registerFenomConfigModifierCompletion = () => languages.registerCompletionItemProvider(
   FENOM_SELECTOR,
   new FenomConfigModifierProvider(),
   '\''
 );
-
-export default {
-  fenomModifierCompletionDisposable,
-  fenomConfigModifierCompletionDisposable,
-};

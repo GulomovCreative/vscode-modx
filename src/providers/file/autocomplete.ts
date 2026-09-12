@@ -180,7 +180,7 @@ export function createContext(
   };
 }
 
-export default languages.registerCompletionItemProvider(
+export default () => languages.registerCompletionItemProvider(
   SELECTORS,
   new FileCompletionProvider(),
   ':',
