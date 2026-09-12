@@ -68,7 +68,7 @@ class ModxPlaceholderCompletion extends ModxCompletionProvider implements Comple
   }
 }
 
-export default languages.registerCompletionItemProvider(
+export default () => languages.registerCompletionItemProvider(
   MODX_SELECTOR,
   new ModxPlaceholderCompletion(),
   '*',

@@ -5,9 +5,8 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "watch",
-			"problemMatcher": "$tsc-watch",
-			"isBackground": true,
+			"script": "esbuild",
+			"problemMatcher": [],
 			"presentation": {
 				"reveal": "never"
 			},
@@ -15,6 +14,26 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"type": "npm",
+			"script": "esbuild-watch",
+			"isBackground": true,
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": "build"
+		},
+		{
+			"type": "npm",
+			"script": "typecheck-watch",
+			"isBackground": true,
+			"problemMatcher": "$tsc-watch",
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": "build"
 		}
 	]
 }

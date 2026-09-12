@@ -32,7 +32,6 @@ class ModxSettingCompletion extends ModxCompletionProvider implements Completion
       item.documentation = new MarkdownString(t(`setting.${setting}`));
       item.documentation.appendMarkdown(`\n\n`);
       item.documentation.appendMarkdown(`[${t('reference')}](${DOCUMENTATION_URL.replace('{lang}', env.language || 'en' ) + setting})`);
-      item.documentation.isTrusted = true;
 
       item.detail = `[[${tokens + setting}]]`;
 
@@ -50,7 +49,7 @@ class ModxSettingCompletion extends ModxCompletionProvider implements Completion
   }
 }
 
-export default languages.registerCompletionItemProvider(
+export default () => languages.registerCompletionItemProvider(
   MODX_SELECTOR,
   new ModxSettingCompletion(),
   '+'

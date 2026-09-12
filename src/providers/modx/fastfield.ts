@@ -117,13 +117,12 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
     const documentation = new MarkdownString(description);
     documentation.appendMarkdown(`\n\n`);
     documentation.appendMarkdown(`[${t('reference')}](${DOCUMENTATION_URL})`);
-    documentation.isTrusted = true;
 
     return documentation;
   }
 }
 
-export default languages.registerCompletionItemProvider(
+export default () => languages.registerCompletionItemProvider(
   MODX_SELECTOR,
   new ModxFastFieldCompletion(),
   '#',
