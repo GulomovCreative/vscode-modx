@@ -1,5 +1,4 @@
-import { TextDocument, Position, CompletionItemProvider, CompletionItem, SnippetString, CompletionItemKind, MarkdownString, Range, languages, env } from 'vscode';
-import { t } from '@vscode/l10n';
+import { TextDocument, Position, CompletionItemProvider, CompletionItem, SnippetString, CompletionItemKind, MarkdownString, Range, languages, env, l10n } from 'vscode';
 
 import { MODX_SELECTOR, getSortText } from '../../common';
 
@@ -29,9 +28,9 @@ class ModxSettingCompletion extends ModxCompletionProvider implements Completion
       const item = new CompletionItem(setting, CompletionItemKind.Variable);
       item.sortText = getSortText(index, setting);
 
-      item.documentation = new MarkdownString(t(`setting.${setting}`));
+      item.documentation = new MarkdownString(l10n.t(`setting.${setting}`));
       item.documentation.appendMarkdown(`\n\n`);
-      item.documentation.appendMarkdown(`[${t('reference')}](${DOCUMENTATION_URL.replace('{lang}', env.language || 'en' ) + setting})`);
+      item.documentation.appendMarkdown(`[${l10n.t('reference')}](${DOCUMENTATION_URL.replace('{lang}', env.language || 'en' ) + setting})`);
 
       item.detail = `[[${tokens + setting}]]`;
 

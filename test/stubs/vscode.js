@@ -190,6 +190,12 @@ const extensions = {
   },
 };
 
+// Описания подсказок в тестах не проверяются: t() возвращает сам ключ, чтобы
+// можно было убедиться, какой именно ключ запрошен, не завися от текста бандлов.
+const l10n = {
+  t: (key) => (typeof key === 'string' ? key : String(key)),
+};
+
 module.exports = {
   CompletionItem,
   CompletionItemKind,
@@ -203,6 +209,7 @@ module.exports = {
   Uri,
   env,
   extensions,
+  l10n,
   languages,
   window,
   workspace,

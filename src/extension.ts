@@ -1,5 +1,4 @@
 import { type ExtensionContext, extensions, window } from 'vscode';
-import './localize';
 
 import { registerModxSnippetCompletion, registerModxSnippetPropCompletion } from './providers/modx/snippet';
 import registerModxModifierCompletion from './providers/modx/modifier';

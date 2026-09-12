@@ -1,8 +1,8 @@
-import { t } from '@vscode/l10n';
+import { l10n } from 'vscode';
 import type { SnippetData, SnippetProp } from '../../../schemas/snippets/';
 
 export const name = 'FormIt';
-export const description = t('FormIt.description');
+export const description = l10n.t('FormIt.description');
 
 export const link = 'index';
 
@@ -24,7 +24,7 @@ export const props = [
   },
   {
     name: 'validationErrorMessage',
-    default: t('FormIt.prop.validationErrorMessage.default'),
+    default: l10n.t('FormIt.prop.validationErrorMessage.default'),
   },
   {
     name: 'validationErrorBulkTpl',
@@ -221,7 +221,7 @@ export const props = [
   },
   {
     name: 'fieldNames',
-    example: t('FormIt.prop.fieldNames.example'),
+    example: l10n.t('FormIt.prop.fieldNames.example'),
   },
 
   {
@@ -270,7 +270,7 @@ export const props = [
     name: 'spamCheckIp',
     default: 0,
   },
-].map(prop => ({ ...prop, description: t(`${name}.prop.${prop.name}`) })) as SnippetProp[];
+].map(prop => ({ ...prop, description: l10n.t(`${name}.prop.${prop.name}`) })) as SnippetProp[];
 
 export default {
   name,

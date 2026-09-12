@@ -1,5 +1,4 @@
-import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, MarkdownString, SnippetString, languages } from 'vscode';
-import { t } from '@vscode/l10n';
+import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, MarkdownString, SnippetString, languages, l10n } from 'vscode';
 
 import { ModxCompletionProvider } from './autocomplete';
 import { snippets, createPropCompletionItem, type SnippetProp } from '../../schemas/snippets/';
@@ -33,7 +32,7 @@ class ModxSnippetCompletion extends ModxCompletionProvider implements Completion
 
       if (snippet.link) {
         item.documentation.appendMarkdown(`\n\n`);
-        item.documentation.appendMarkdown(`[${t('reference')}](${snippet.link})`);
+        item.documentation.appendMarkdown(`[${l10n.t('reference')}](${snippet.link})`);
       }
 
       item.insertText = new SnippetString(

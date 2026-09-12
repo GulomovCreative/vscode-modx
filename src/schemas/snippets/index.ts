@@ -1,5 +1,4 @@
-import { CompletionItem, CompletionItemKind, MarkdownString } from 'vscode';
-import { t } from '@vscode/l10n';
+import { CompletionItem, CompletionItemKind, MarkdownString, l10n } from 'vscode';
 import { getSortText } from '../../common';
 
 import pdoToolsSnippets from './pdoTools/';
@@ -45,7 +44,7 @@ export function createPropCompletionItem(
 
   if (prop.example) {
     item.documentation.appendMarkdown('\n\n');
-    item.documentation.appendMarkdown(t('example') + ':');
+    item.documentation.appendMarkdown(l10n.t('example') + ':');
     item.documentation.appendCodeblock(prop.example);
   }
 

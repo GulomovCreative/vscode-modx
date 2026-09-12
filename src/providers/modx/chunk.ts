@@ -1,5 +1,4 @@
-import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, MarkdownString, languages, Range, env } from 'vscode';
-import { t } from '@vscode/l10n';
+import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, MarkdownString, languages, Range, env, l10n } from 'vscode';
 
 import { MODX_SELECTOR } from '../../common';
 import { ModxCompletionProvider } from './autocomplete';
@@ -37,9 +36,9 @@ class ModxChunkCompletion extends ModxCompletionProvider implements CompletionIt
   }
 
   getDocumentation(): MarkdownString | string {
-    const documentation = new MarkdownString(t('chunk'));
+    const documentation = new MarkdownString(l10n.t('chunk'));
     documentation.appendMarkdown(`\n\n`);
-    documentation.appendMarkdown(`[${t('reference')}](https://docs.modx.com/current/${env.language || 'en'}/building-sites/elements/chunks)`);
+    documentation.appendMarkdown(`[${l10n.t('reference')}](https://docs.modx.com/current/${env.language || 'en'}/building-sites/elements/chunks)`);
 
     return documentation;
   }

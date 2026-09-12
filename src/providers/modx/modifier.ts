@@ -1,5 +1,4 @@
-import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, MarkdownString, SnippetString, languages, env } from 'vscode';
-import { t } from '@vscode/l10n';
+import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, MarkdownString, SnippetString, languages, env, l10n } from 'vscode';
 
 import { ModxCompletionProvider } from './autocomplete';
 import { modxModifiers as modifiers, type Modifier } from '../../schemas/modifiers';
@@ -49,7 +48,7 @@ class ModxModifierCompletion extends ModxCompletionProvider implements Completio
     insertNameOnly: boolean,
   ): CompletionItem {
     const item = new CompletionItem(name, CompletionItemKind.Method);
-    item.documentation = new MarkdownString(t(`modx.modifier.${Array.isArray(mod.name) ? mod.name[0] : mod.name}`));
+    item.documentation = new MarkdownString(l10n.t(`modx.modifier.${Array.isArray(mod.name) ? mod.name[0] : mod.name}`));
 
     if (mod.example) {
       item.documentation.appendMarkdown('\n\n');
@@ -58,7 +57,7 @@ class ModxModifierCompletion extends ModxCompletionProvider implements Completio
 
     if (mod.link) {
       item.documentation.appendMarkdown(`\n\n`);
-      item.documentation.appendMarkdown(`[${t('reference')}](${env.language === 'ru' ? mod.link : 'https://docs.modx.com/current/en/building-sites/tag-syntax/output-filters'})`);
+      item.documentation.appendMarkdown(`[${l10n.t('reference')}](${env.language === 'ru' ? mod.link : 'https://docs.modx.com/current/en/building-sites/tag-syntax/output-filters'})`);
     }
 
     const arg = mod.placeholder ? ('=`' + (mod.placeholder === true ? 'input' : mod.placeholder) + '`') : '';
