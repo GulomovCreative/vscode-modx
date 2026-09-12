@@ -8,3 +8,4 @@ src/**
 node_modules
 out/**
 .github/workflows/**
+test/**

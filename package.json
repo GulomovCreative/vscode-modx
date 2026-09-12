@@ -128,7 +128,8 @@
 		"publish": "vsce publish",
 		"lint": "eslint \"src/**/*.ts\"",
 		"typecheck": "tsc -p ./",
-		"typecheck-watch": "tsc -p ./ --watch"
+		"typecheck-watch": "tsc -p ./ --watch",
+		"test": "node --test \"test/*.test.js\""
 	},
 	"devDependencies": {
 		"@types/lodash": "^4.14.199",
