@@ -17,10 +17,13 @@ export function joinProps(
   props: SnippetProp[],
   commonProps: SnippetProp[] = [],
 ): SnippetProp[] {
-  const filtered = commonProps.filter(cProp => !props.some(prop => prop.name === cProp.name));
+  const joined: SnippetProp[] = [];
 
-  return [
-    ...props,
-    ...filtered,
-  ];
+  for (const prop of [...props, ...commonProps]) {
+    if (!joined.some(item => item.name === prop.name)) {
+      joined.push(prop);
+    }
+  }
+
+  return joined;
 }
