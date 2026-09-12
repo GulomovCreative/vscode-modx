@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.0]
+
 ### Added
 
 - Autocomplete for fastField and pdoParser tags after `#`: resource fields
@@ -23,6 +25,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Grammars and the Fenom language configuration are taken from their own
   packages, so a grammar fix reaches the extension with a version bump.
+- Fenom no longer re-indents while a tag is typed. The language configuration
+  now comes from the grammar package, and its current version declares no
+  indentation rules; `Format Document` and `Format Selection` re-indent instead.
 - Setting descriptions render as markdown instead of raw HTML, which the
   suggestion popup showed as tags.
 - The extension is bundled into `dist/` without `lodash` and `json5`, and the
@@ -102,7 +107,8 @@ First published release.
 - Snippet schemas for pdoTools, miniShop2, FormIt and FetchIt.
 - The `vscode-modx.elementsPath` setting.
 
-[Unreleased]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.6...master
+[Unreleased]: https://github.com/GulomovCreative/vscode-modx/compare/v1.1.0...master
+[1.1.0]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.6...v1.1.0
 [1.0.6]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.3...v1.0.4
