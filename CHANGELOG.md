@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Fenom re-indents while a tag is typed again. The grammar package declares
+  indentation rules once more, and they now cover every block tag Fenom closes:
+  `{var}`, `{set}` and `{add}` in their block form but not when they carry an
+  assignment, the `{case}` and `{default}` branch markers, and a tag that opens
+  and closes on one line no longer shifts the line under it.
+
 ## [1.1.0]
 
 ### Added

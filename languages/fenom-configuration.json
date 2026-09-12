@@ -17,6 +17,10 @@
     { "open": "'", "close": "'", "notIn": ["string", "comment"] },
     { "open": "<!--", "close": "-->", "notIn": ["comment", "string"] }
   ],
+  "indentationRules": {
+    "increaseIndentPattern": "\\{(if|foreach|for|while|switch|block|filter|macro|autoescape|escape|strip|ignore)\\b[^}]*\\}(?!.*\\{/\\1\\})|\\{(var|set|add)\\b[^=}]*\\}(?!.*\\{/\\2\\})|^\\s*\\{(?:elseif|else|foreachelse|forelse|case|default)\\b[^}]*\\}",
+    "decreaseIndentPattern": "^\\s*\\{(?:/(?:if|foreach|for|while|switch|block|filter|macro|autoescape|escape|strip|ignore|var|set|add)|elseif|else|foreachelse|forelse|case|default)\\b[^}]*\\}"
+  },
   "surroundingPairs": [
     ["{", "}"],
     ["[", "]"],

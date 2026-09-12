@@ -134,7 +134,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
-		"@gulomov/fenom-tmlanguage": "^2.0.2",
+		"@gulomov/fenom-tmlanguage": "^2.1.0",
 		"@gulomov/modx-tmlanguage": "^2.0.0",
 		"@types/node": "^16.18.34",
 		"@types/vscode": "^1.81.0",
