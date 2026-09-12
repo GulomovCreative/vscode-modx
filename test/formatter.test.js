@@ -1,24 +1,6 @@
 const { test, describe, before } = require('node:test');
 const assert = require('node:assert/strict');
-const path = require('node:path');
-const { build } = require('esbuild');
-
-const ROOT = path.resolve(__dirname, '..');
-
-async function load(entry) {
-  const result = await build({
-    entryPoints: [path.join(ROOT, 'src', entry)],
-    bundle: true,
-    write: false,
-    format: 'cjs',
-    platform: 'node',
-  });
-
-  const module_ = { exports: {} };
-  new Function('module', 'exports', 'require', result.outputFiles[0].text)(module_, module_.exports, require);
-
-  return module_.exports;
-}
+const { loadModule } = require('./helpers');
 
 const OPTIONS = { tabSize: 2, insertSpaces: true };
 
@@ -26,7 +8,7 @@ describe('Сканер шаблонов', () => {
   let scan;
 
   before(async () => {
-    ({ scan } = await load('scanner.ts'));
+    ({ scan } = await loadModule('scanner.ts'));
   });
 
   const kinds = (text, language) => scan(text, language).map((token) => token.kind);
@@ -94,7 +76,7 @@ describe('Форматирование', () => {
   let format;
 
   before(async () => {
-    ({ format } = await load('formatter.ts'));
+    ({ format } = await loadModule('formatter.ts'));
   });
 
   const check = (title, language, input, expected) => {

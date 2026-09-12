@@ -12,7 +12,7 @@ export const args = [
 class FenomArgumentCompletionProvider extends FenomCompletionProvider implements CompletionItemProvider {
   provideCompletionItems(document: TextDocument, position: Position) {
     this.createContext(position, document);
-    if (!this.isInMustacheBlock) {
+    if (!this.isInsideTag) {
       return [];
     }
 

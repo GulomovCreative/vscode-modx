@@ -12,6 +12,23 @@ const STUBS = {
 
 let activated;
 
+// Отдельный модуль из src, собранный без стабов: для кода, который не зависит
+// от vscode, — сканера, форматтера, утилит.
+async function loadModule(entry) {
+  const result = await build({
+    entryPoints: [path.join(ROOT, 'src', entry)],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+  });
+
+  const module_ = { exports: {} };
+  new Function('module', 'exports', 'require', result.outputFiles[0].text)(module_, module_.exports, require);
+
+  return module_.exports;
+}
+
 // Расширение собирается один раз на весь прогон: esbuild подменяет vscode и
 // @vscode/l10n на стабы, после чего activate() регистрирует настоящие провайдеры.
 async function activate() {
@@ -252,6 +269,7 @@ module.exports = {
   getProvider,
   insertText,
   labels,
+  loadModule,
   loadSource,
   vscode,
 };

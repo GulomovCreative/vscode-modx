@@ -11,7 +11,7 @@ class ModxSnippetCompletion extends ModxCompletionProvider implements Completion
     position: Position,
   ) {
     this.createContext(position, document);
-    if (!this.isInBracesBlock) {
+    if (!this.isInsideTag) {
       return;
     }
 
@@ -55,7 +55,7 @@ class ModxSnippetPropCompletion extends ModxCompletionProvider implements Comple
     position: Position,
   ) {
     this.createContext(position, document);
-    if (!this.isInBracesBlock) {
+    if (!this.isInsideTag) {
       return;
     }
 

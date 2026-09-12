@@ -13,7 +13,7 @@ class ModxModifierCompletion extends ModxCompletionProvider implements Completio
     position: Position,
   ) {
     this.createContext(position, document);
-    if (!this.isInBracesBlock) {
+    if (!this.isInsideTag) {
       return;
     }
 

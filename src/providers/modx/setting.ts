@@ -21,7 +21,7 @@ class ModxSettingCompletion extends ModxCompletionProvider implements Completion
   }
 
   getCompletionItems(): CompletionItem[] {
-    const isInBracesBlock = this.isInBracesBlock;
+    const isInsideTag = this.isInsideTag;
     const [ tokens = '' ] = this.context.textBefore.match(/!?\+{2}$/) || [];
     const { wordRange } = this.context;
 
@@ -35,7 +35,7 @@ class ModxSettingCompletion extends ModxCompletionProvider implements Completion
 
       item.detail = `[[${tokens + setting}]]`;
 
-      if (!isInBracesBlock) {
+      if (!isInsideTag) {
         item.insertText = new SnippetString(`[[${tokens + setting}]]`);
         item.filterText = tokens + setting;
         item.range = new Range(

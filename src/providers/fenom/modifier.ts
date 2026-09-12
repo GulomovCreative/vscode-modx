@@ -95,7 +95,7 @@ class FenomModifierProvider extends FenomCompletionProvider implements Completio
 
   shouldProvide(): boolean {
     if (
-      this.isInMustacheBlock
+      this.isInsideTag
       && /(?<!\|)\|(?!\|)\s?$/.test(this.context.textBefore.replace(/\s/g, ''))
     ) {
       return true;
@@ -142,7 +142,7 @@ class FenomConfigModifierProvider extends FenomCompletionProvider implements Com
     const { textFullLine, textAfter, textBefore } = this.context;
 
     if (
-      this.isInMustacheBlock &&
+      this.isInsideTag &&
       (
         (
           /^['"](\s*\|\s*(config|option))?[^\])]?}/.test(textAfter)

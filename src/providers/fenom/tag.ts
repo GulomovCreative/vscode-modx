@@ -265,7 +265,7 @@ class FenomTagCloseCompletion extends FenomCompletionProvider implements Complet
     const item = new CompletionItem(label, CompletionItemKind.Module);
     item.insertText = tag.name;
 
-    if (!this.isInMustache) {
+    if (!this.isInsideTag) {
       item.insertText = `{${label}}`;
 
       item.range = new Range(
@@ -297,7 +297,7 @@ class FenomTagArgumentCompletion extends FenomCompletionProvider implements Comp
     this.createContext(position, document);
 
     const quotes = this.context.textBefore.match(/['"]/g) || [];
-    if (!this.isInMustache || quotes.length % 2 !== 0) {
+    if (!this.isInsideTag || quotes.length % 2 !== 0) {
       return [];
     }
 
@@ -328,7 +328,7 @@ class FenomTagOptionCompletion extends FenomCompletionProvider implements Comple
   ) {
     this.createContext(position, document);
 
-    if (!this.isInMustache || !/{\w+:$/.test(this.context.textBefore)) {
+    if (!this.isInsideTag || !/{\w+:$/.test(this.context.textBefore)) {
       return [];
     }
 
