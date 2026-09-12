@@ -5,6 +5,9 @@
 		"lib": ["es2020"],
 		"noEmit": true,
 		"strict": true,
+		// @types/node подобран под версию Node внутри VS Code 1.81 и с новым
+		// TypeScript расходится в описании Buffer. Свой код это не затрагивает.
+		"skipLibCheck": true,
 		"rootDir": "src",
 		"esModuleInterop": true,
 		"resolveJsonModule": true,

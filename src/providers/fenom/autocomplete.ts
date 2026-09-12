@@ -1,6 +1,8 @@
 import { MainCompletionProvider } from '../autocomplete';
 import { tags } from './tag';
-import { inRange } from 'lodash';
+import type { FenomBlock } from '../../cache';
+import { inRange } from '../../utils';
+import { getFenomBlocks } from '../../cache';
 
 export type ParsedSnippet = {
   name: string
@@ -16,7 +18,7 @@ export type ParsedTag = {
 export class FenomCompletionProvider extends MainCompletionProvider {
   getParentTags(): ParsedTag[] {
     const before = this.getBefore();
-    const matches = [...before.matchAll(/{(\/?[a-z]+)\s?([^{}]*)}/g)] || [];
+    const matches = [...before.matchAll(/{(\/?[a-z]+)\s?([^{}]*)}/g)];
     const parsedTags = matches.map(([ body, name, args ]) => ({ name, args, body }));
     const pairedTags = parsedTags.reduce((result, tag) => {
       if (tag.name.startsWith('/')) {
@@ -109,7 +111,7 @@ export class FenomCompletionProvider extends MainCompletionProvider {
     let { before, after } = body;
     let diff = 0;
 
-    const calls = [...before.matchAll(/\$_modx->runSnippet\(['"]!?[\w@]+['"],\s*\[|['"]!?[\w@]+['"]\s*\|\s*snippet\s*:\s*\[/g)] || [];
+    const calls = [...before.matchAll(/\$_modx->runSnippet\(['"]!?[\w@]+['"],\s*\[|['"]!?[\w@]+['"]\s*\|\s*snippet\s*:\s*\[/g)];
     const lastCall = calls.at(-1);
 
     if (!lastCall) {
@@ -126,14 +128,14 @@ export class FenomCompletionProvider extends MainCompletionProvider {
         diff--;
       }
 
-      if (diff === 1 && lastCall.index) {
+      if (diff === 1 && typeof lastCall.index !== 'undefined') {
         before = before.substring(lastCall.index);
         break;
       }
     }
 
     after: {
-      const squares = [...after.matchAll(/\[|\]/g)] || [];
+      const squares = [...after.matchAll(/\[|\]/g)];
       for (const match of squares) {
         if (match[0] === '[') {
           diff++;
@@ -141,7 +143,7 @@ export class FenomCompletionProvider extends MainCompletionProvider {
           diff--;
         }
 
-        if (diff === 0 && match.index) {
+        if (diff === 0 && typeof match.index !== 'undefined') {
           after = after.substring(0, match.index + 1);
           break after;
         }
@@ -171,23 +173,7 @@ export class FenomCompletionProvider extends MainCompletionProvider {
     };
   }
 
-  getBlocks(): {
-    start: number,
-    end: number,
-    input: string,
-  }[] {
-    const { document } = this.context;
-    const text = document.getText();
-
-    return [...text.matchAll(/{[^'"}]*(("[^"]*"|'[^']*')[^'"}]*)*}/gm)].map(match => {
-      const [ input = '' ] = match;
-      const index = match.index || 0;
-
-      return {
-        input,
-        start: index,
-        end: index + input.length,
-      };
-    });
+  getBlocks(): FenomBlock[] {
+    return getFenomBlocks(this.context.document);
   }
 }

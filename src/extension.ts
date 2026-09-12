@@ -18,6 +18,9 @@ import { registerFenomSnippetModifierCompletion, registerFenomSnippetMethodCompl
 import registerFenomArgumentCompletion from './providers/fenom/argument';
 import registerFenomBlockNameCompletion from './providers/fenom/block';
 
+import { registerDocumentFormatting, registerRangeFormatting } from './providers/format';
+
+
 export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     registerModxModifierCompletion(),
@@ -45,6 +48,9 @@ export async function activate(context: ExtensionContext) {
 
     registerFileDefinition(),
     registerFileCompletion(),
+
+    registerDocumentFormatting(),
+    registerRangeFormatting(),
   );
 
   const htmlExtension = extensions.getExtension('vscode.html-language-features');
