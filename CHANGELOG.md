@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.2.0]
+
 ### Added
 
 - The extension runs in the browser: github.dev, vscode.dev and any other
@@ -154,7 +156,8 @@ to describe it with and no commit to tag.
 - Snippet schemas for pdoTools, miniShop2, FormIt and FetchIt.
 - The `vscode-modx.elementsPath` setting.
 
-[Unreleased]: https://github.com/GulomovCreative/vscode-modx/compare/v1.1.0...master
+[Unreleased]: https://github.com/GulomovCreative/vscode-modx/compare/v1.2.0...master
+[1.2.0]: https://github.com/GulomovCreative/vscode-modx/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.6...v1.1.0
 [1.0.6]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/GulomovCreative/vscode-modx/compare/v1.0.4...v1.0.5
