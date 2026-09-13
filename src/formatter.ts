@@ -82,6 +82,49 @@ function htmlDelta(line: string): { leading: number, delta: number } {
 }
 
 /**
+ * Пары, открытые и закрытые в одной строке, выбрасываются.
+ *
+ * `srcset="{$a}{if $b}, {$c} 2x{/if}"` вложенности не меняет, но без этого
+ * `{if}` считался открытым блоком, а его `{/if}` — просто уменьшением
+ * глубины. Открытый блок оставался в стеке навсегда, и следующая закрывающая
+ * конструкция вставала на его уровень: в шаблоне это видно по `{/block}`,
+ * уехавшему вглубь на месте, где вложенности уже нет.
+ */
+function withoutInlinePairs(tokens: Token[]): Token[] {
+  const opened: Array<{ index: number, tag: string }> = [];
+  const paired = new Set<number>();
+
+  tokens.forEach((token, index) => {
+    if (token.kind !== 'fenom-tag') {
+      return;
+    }
+
+    const match = /^\{(\/?)([a-z]+)/.exec(token.value);
+    if (!match || !FENOM_BLOCK_TAGS.has(match[2])) {
+      return;
+    }
+
+    if (!match[1]) {
+      opened.push({ index, tag: match[2] });
+
+      return;
+    }
+
+    for (let position = opened.length - 1; position >= 0; position--) {
+      if (opened[position].tag === match[2]) {
+        paired.add(opened[position].index);
+        paired.add(index);
+        opened.splice(position, 1);
+
+        return;
+      }
+    }
+  });
+
+  return paired.size ? tokens.filter((_token, index) => !paired.has(index)) : tokens;
+}
+
+/**
  * Теги Fenom в строке.
  *
  * Ветвление шаблона и вложенность HTML независимы: в {if}/{else} каждая ветвь
@@ -89,7 +132,8 @@ function htmlDelta(line: string): { leading: number, delta: number } {
  * граница ветви не считается дельтой, а сообщается отдельно — уровень на ней
  * восстанавливается по тому, каким он был на открывающем теге.
  */
-function fenomDelta(tokens: Token[]): { leading: number, delta: number, boundary?: 'open' | 'middle' | 'case' | 'close' } {
+function fenomDelta(input: Token[]): { leading: number, delta: number, boundary?: 'open' | 'middle' | 'case' | 'close' } {
+  const tokens = withoutInlinePairs(input);
   const leading = 0;
   let delta = 0;
   let boundary: 'open' | 'middle' | 'case' | 'close' | undefined;

@@ -178,6 +178,46 @@ describe('Форматирование', () => {
 // подходил ни под одно построчное выражение, поэтому вложенность на нём не
 // росла, а закрывающий тег её всё равно уменьшал: каждый такой тег уводил
 // остаток файла на уровень влево.
+// Блок, открытый и закрытый в одной строке, вложенности не меняет. Раньше он
+// оставался в стеке открытых навсегда, и следующая закрывающая конструкция
+// вставала на его уровень.
+describe('Форматирование: парные теги в одной строке', () => {
+  let format;
+
+  before(async () => {
+    ({ format } = await loadModule('formatter.ts'));
+  });
+
+  const check = (title, input, expected) => {
+    test(title, () => {
+      const actual = format(input, 'fenom', OPTIONS);
+
+      assert.equal(actual, expected);
+      assert.equal(format(actual, 'fenom', OPTIONS), actual, 'повторное форматирование меняет результат');
+    });
+  };
+
+  check('{if} внутри значения атрибута не уводит {/block} вглубь',
+    ['{block "content"}', '<div>', '<img srcset="{$a}{if $b}, {$c} 2x{/if}">', '</div>', '{/block}'].join('\n'),
+    ['{block "content"}', '  <div>', '    <img srcset="{$a}{if $b}, {$c} 2x{/if}">', '  </div>', '{/block}'].join('\n'),
+  );
+
+  check('{if} с текстом в одной строке не меняет вложенность соседей',
+    ['<div>', '{if $a}да{/if}', '<span>x</span>', '</div>'].join('\n'),
+    ['<div>', '  {if $a}да{/if}', '  <span>x</span>', '</div>'].join('\n'),
+  );
+
+  check('закрытая пара и открытый блок в одной строке: открытый считается',
+    ['{if $a}да{/if}{foreach $items as $item}', '<li>{$item}</li>', '{/foreach}'].join('\n'),
+    ['{if $a}да{/if}{foreach $items as $item}', '  <li>{$item}</li>', '{/foreach}'].join('\n'),
+  );
+
+  check('вложенная пара в одной строке',
+    ['{block "a"}', '{if $x}{if $y}z{/if}{/if}', '<p>после</p>', '{/block}'].join('\n'),
+    ['{block "a"}', '  {if $x}{if $y}z{/if}{/if}', '  <p>после</p>', '{/block}'].join('\n'),
+  );
+});
+
 describe('Форматирование: многострочные теги HTML', () => {
   let format;
 

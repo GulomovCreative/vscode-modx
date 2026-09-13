@@ -31,6 +31,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- A tag that opens and closes on one line no longer moves everything after it.
+  `srcset="{$a}{if $b}, {$c} 2x{/if}"` changes no nesting, but the `{if}` was
+  counted as an open block that nothing ever closed, so the next closing
+  construct took its level — in a real template `{/block}` ended up two levels
+  deep where there was no nesting left at all.
 - Formatting no longer walks a template left. An HTML tag written over several
   lines — normal with Tailwind — matched none of the per-line patterns, so the
   nesting never grew on it while the closing tag still shrank it: every such tag
