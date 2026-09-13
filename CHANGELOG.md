@@ -25,11 +25,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   one already did. Typing `[[` closes it with `]]`, `[[…]]` works as a pair to
   select and surround with, and `<`, `>` and `<!-- -->` are understood the way
   they are in HTML.
-- MODX no longer re-indents while a tag is typed, and that is a repair rather
-  than a loss: the rules it used outdented **every** line holding a tag that
-  opened and closed on itself. In a template where half the lines are
-  `[[*pagetitle]]`, typing walked the indentation left a level at a time.
-  `Format Document` re-indents instead, and it counts multi-line calls properly.
+- MODX re-indents correctly while a tag is typed. The rules it used before
+  outdented **every** line holding a tag that opened and closed on itself: in a
+  template where half the lines are `[[*pagetitle]]`, typing walked the
+  indentation left a level at a time. The rules now come from the grammar
+  package and are written against the real shapes — a multi-line snippet call
+  indents, a self-contained tag does not move the line, `[[- … ]]` is a comment
+  rather than an opening, and `]]` inside a value in backticks closes nothing.
 - Folding in MODX follows `<!-- #region -->` and `<!-- #endregion -->` instead
   of bare `[[` and `]]` at the start of a line. The old markers are per-line —
   a line is either a start or an end — so `[[*pagetitle]]` opened a region that
