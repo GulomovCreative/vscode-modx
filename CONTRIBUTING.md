@@ -87,9 +87,18 @@ matching `CHANGELOG.md` section — the two must not drift.
    git push origin master --follow-tags
    ```
 
-4. Publish: `npm run publish`. `vscode:prepublish` syncs the grammars and
-   minifies the bundle, so the package always carries the grammar versions the
-   lock file pins.
+4. Install from the lock file and publish:
+
+   ```sh
+   npm ci
+   npm run publish
+   ```
+
+   `vscode:prepublish` syncs the grammars and minifies the bundle, so the
+   package always carries the grammar versions the lock file pins. `npm ci`
+   matters here: the grammars are copied out of `node_modules`, so an install
+   left behind by an earlier checkout would package an older grammar. The sync
+   script refuses to run when the two disagree rather than copying quietly.
 5. Create the GitHub release on the tag with the same notes.
 
 ## Commits and pull requests

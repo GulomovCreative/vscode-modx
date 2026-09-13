@@ -6,6 +6,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Building the package no longer takes the grammars from an outdated
+  `node_modules`. The files in `languages/` are copies of what the grammar
+  packages ship, and the sync script wrote whatever was installed: a publish
+  run after `git pull` without `npm ci` rewrote a copy with the previous
+  version of the package. That run happened to stop on a file the older
+  version did not have yet — had the set of files matched, the release would
+  have carried highlighting one version behind. The script now compares the
+  installed versions with `package-lock.json` before it writes anything.
+
 ## [1.3.0]
 
 ### Added
