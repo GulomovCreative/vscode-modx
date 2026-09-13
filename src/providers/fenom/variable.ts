@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, CompletionItemProvider, MarkdownString, Position, SnippetString, TextDocument, Command, languages, Range, l10n } from 'vscode';
+import { CompletionItem, CompletionItemKind, CompletionItemProvider, MarkdownString, Position, SnippetString, TextDocument, Command, languages, Range } from 'vscode';
 import { toPath } from '../../utils';
 import { FenomCompletionProvider } from './autocomplete';
 import { FENOM_SELECTOR, getSortText, RETRIGGER_COMMAND } from '../../common';
@@ -7,6 +7,7 @@ import resourceFields from '../../schemas/resource';
 import { userFields } from '../../schemas/user';
 import { contextFields } from '../../schemas/context';
 import { systemSettings } from '../../schemas/settings';
+import { t } from '../../localize';
 
 type VariableType = 'array' | 'object' | 'local' | undefined
 
@@ -168,7 +169,7 @@ const methods: Variable[] = [
     name: 'cleanAlias',
     detail: "(string $alias): string|null",
   },
-].map(data => ({ ...data, description: l10n.t(`var.$_modx.method.${data.name}`) }));
+].map(data => ({ ...data, description: t(`var.$_modx.method.${data.name}`) }));
 
 // Базовый список неизменяем. Локальные переменные документа добавляются
 // поверх него на время одного запроса: экземпляр провайдера один на всё
@@ -177,41 +178,41 @@ const rootVariables: Variable[] = [
   {
     name: '$_modx',
     type: 'object',
-    description: l10n.t('var.$_modx'),
+    description: t('var.$_modx'),
     kind: CompletionItemKind.Class,
     items: [
       {
         name: 'resource',
-        description: l10n.t('var.$_modx.resource'),
-        items: resourceFields.map(name => ({ name, description: l10n.t(`resource.${name}`) })),
+        description: t('var.$_modx.resource'),
+        items: resourceFields.map(name => ({ name, description: t(`resource.${name}`) })),
       },
       {
         name: 'user',
-        description: l10n.t('var.$_modx.user'),
-        items: userFields.map(name => ({ name, description: l10n.t(`user.${name}`) })),
+        description: t('var.$_modx.user'),
+        items: userFields.map(name => ({ name, description: t(`user.${name}`) })),
       },
       {
         name: 'context',
-        description: l10n.t('var.$_modx.context'),
-        items: contextFields.map(name => ({ name, description: l10n.t(`context.${name}`) })),
+        description: t('var.$_modx.context'),
+        items: contextFields.map(name => ({ name, description: t(`context.${name}`) })),
       },
       {
         name: 'config',
-        description: l10n.t('var.$_modx.config'),
-        items: systemSettings.map(name => ({ name, description: l10n.t(`setting.${name}`) })),
+        description: t('var.$_modx.config'),
+        items: systemSettings.map(name => ({ name, description: t(`setting.${name}`) })),
       },
 
       {
         name: 'lexicon',
         kind: CompletionItemKind.Module,
         type: 'object',
-        description: l10n.t('var.$_modx.lexicon'),
+        description: t('var.$_modx.lexicon'),
         items: [
           {
             name: 'load',
             detail: 'load(string $key): void',
             kind: CompletionItemKind.Method,
-            description: l10n.t('var.$_modx.lexicon.load'),
+            description: t('var.$_modx.lexicon.load'),
           },
         ],
       },
@@ -219,19 +220,19 @@ const rootVariables: Variable[] = [
         name: 'cacheManager',
         kind: CompletionItemKind.Module,
         type: 'object',
-        description: l10n.t('var.$_modx.cacheManager'),
+        description: t('var.$_modx.cacheManager'),
         items: [
           {
             name: 'get',
             detail: 'get(string $key, array $options = []): mixed',
             kind: CompletionItemKind.Method,
-            description: l10n.t('var.$_modx.cacheManager.get'),
+            description: t('var.$_modx.cacheManager.get'),
           },
           {
             name: 'set',
             detail: 'set(string $key, mixed $var, integer $lifetime = 0): bool',
             kind: CompletionItemKind.Method,
-            description: l10n.t('var.$_modx.cacheManager.set'),
+            description: t('var.$_modx.cacheManager.set'),
           },
         ],
       },
@@ -241,7 +242,7 @@ const rootVariables: Variable[] = [
   },
   {
     name: '$',
-    description: l10n.t('var.$'),
+    description: t('var.$'),
     kind: CompletionItemKind.Class,
     items: [
       ...[
@@ -258,10 +259,10 @@ const rootVariables: Variable[] = [
         'const',
         'call',
         'block',
-      ].map(name => ({ name, description: l10n.t(`var.$.${name}`) })),
+      ].map(name => ({ name, description: t(`var.$.${name}`) })),
       {
         name: 'tpl',
-        description: l10n.t('var.$.tpl'),
+        description: t('var.$.tpl'),
         items: [
           'name',
           'basename',
@@ -269,7 +270,7 @@ const rootVariables: Variable[] = [
           'options',
           'depends',
           'time',
-        ].map(name => ({ name, description: l10n.t(`var.$.tpl.${name}`) })),
+        ].map(name => ({ name, description: t(`var.$.tpl.${name}`) })),
       },
     ],
   },
@@ -409,23 +410,23 @@ class FenomVariablesProvider extends FenomCompletionProvider implements Completi
       const blockVars: Variable[] = [
         {
           name: itemOrKey,
-          description: l10n.t(`var.foreach.${item ? 'key' : 'item'}`),
+          description: t(`var.foreach.${item ? 'key' : 'item'}`),
         },
         {
           name: item,
-          description: l10n.t('var.foreach.item'),
+          description: t('var.foreach.item'),
         },
         {
           name: index,
-          description: l10n.t('var.foreach.index'),
+          description: t('var.foreach.index'),
         },
         {
           name: first,
-          description: l10n.t('var.foreach.first'),
+          description: t('var.foreach.first'),
         },
         {
           name: last,
-          description: l10n.t('var.foreach.last'),
+          description: t('var.foreach.last'),
         },
       ];
 

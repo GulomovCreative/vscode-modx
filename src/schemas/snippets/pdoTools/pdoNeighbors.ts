@@ -1,5 +1,5 @@
-import { l10n } from 'vscode';
 import type { SnippetData, SnippetProp } from '../../../schemas/snippets/';
+import { t } from '../../../localize';
 
 export const name = 'pdoNeighbors';
 
@@ -9,7 +9,7 @@ export const props: SnippetProp[] = [
     type: 'number',
     default: {
       type: 'text',
-      value: l10n.t(`${name}.prop.id.default`),
+      value: t(`${name}.prop.id.default`),
     },
   },
   {

@@ -5,7 +5,6 @@ import {
   Range,
   TextDocument,
   Uri,
-  l10n,
   languages,
   workspace,
 } from 'vscode';
@@ -13,6 +12,7 @@ import {
 import { findProblems, type DiagnosticLevel } from '../diagnostics';
 import { getDocumentText } from '../cache';
 import { type TemplateLanguage } from '../scanner';
+import { t } from '../localize';
 
 const LANGUAGES = new Set(['modx', 'fenom']);
 
@@ -35,7 +35,7 @@ function build(document: TextDocument): Diagnostic[] {
   return findProblems(text, document.languageId as TemplateLanguage, level()).map((problem) => {
     const diagnostic = new Diagnostic(
       new Range(document.positionAt(problem.start), document.positionAt(problem.end)),
-      l10n.t(problem.code, ...problem.args),
+      t(problem.code, ...problem.args),
       SEVERITY,
     );
 

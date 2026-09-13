@@ -8,6 +8,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Suggestions and diagnostics read as English again instead of showing the
+  internal key: `FetchIt.description` in place of the description, `reference`
+  in place of the link, `diagnostic.unclosedBlock` in the Problems panel. The
+  descriptions are stored under keys, and `vscode.l10n` treats the key it is
+  given as the message itself — it looks the key up in the bundle for the
+  display language and hands it back unchanged when there is none. English has
+  no bundle at all: `bundle.l10n.json` exists for translators and is never
+  loaded at runtime. Until 1.2.0 the extension loaded that file itself, so the
+  keys resolved; moving to the editor's own localization removed the only
+  source of English. The English dictionary is now compiled into the bundle and
+  answers whenever the editor has no translation, which also covers a key the
+  Russian bundle is missing.
 - Building the package no longer takes the grammars from an outdated
   `node_modules`. The files in `languages/` are copies of what the grammar
   packages ship, and the sync script wrote whatever was installed: a publish

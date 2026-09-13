@@ -132,6 +132,19 @@ describe('Диагностика: подключение к редактору',
     assert.equal(items[0].source, 'MODX');
   });
 
+  // Та же регрессия, что и в описаниях подсказок: сообщение собиралось вызовом
+  // с ключом, и на английском интерфейсе в панель Problems попадал сам ключ —
+  // «diagnostic.unclosedBlock», ещё и без подставленного имени тега.
+  test('сообщение — текст с подставленным именем тега', () => {
+    const { document } = documentWithCursor('{if $a}‸\ntext', 'fenom');
+
+    vscode.events.didOpen.fire(document);
+
+    const items = vscode.diagnostics.get(document.uri.toString());
+
+    assert.equal(items[0].message, 'Tag if is never closed.');
+  });
+
   test('целый шаблон диагностик не оставляет', () => {
     const { document } = documentWithCursor('{if $a}x{/if}‸', 'fenom');
 

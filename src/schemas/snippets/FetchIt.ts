@@ -1,10 +1,10 @@
-import { l10n } from 'vscode';
 import { joinProps } from '../../common';
 import { SnippetData, SnippetProp } from '../snippets/';
 import { props as formItProps } from './FormIt/FormIt';
+import { t } from '../../localize';
 
 export const name = 'FetchIt';
-export const description = l10n.t('FetchIt.description');
+export const description = t('FetchIt.description');
 export const link = 'https://docs.modx.pro/components/fetchit/';
 
 export const props: SnippetProp[] = joinProps([
@@ -24,7 +24,7 @@ export const props: SnippetProp[] = joinProps([
     name: 'clearFieldsOnSuccess',
     default: 1,
   },
-].map(prop => ({ ...prop, description: l10n.t(`${name}.prop.${prop.name}`) })), formItProps);
+].map(prop => ({ ...prop, description: t(`${name}.prop.${prop.name}`) })), formItProps);
 
 export default {
   name,

@@ -1,6 +1,7 @@
-import { CompletionItem, CompletionItemKind, CompletionItemProvider, MarkdownString, Position, TextDocument, languages, l10n } from 'vscode';
+import { CompletionItem, CompletionItemKind, CompletionItemProvider, MarkdownString, Position, TextDocument, languages } from 'vscode';
 import { FenomCompletionProvider } from './autocomplete';
 import { FENOM_SELECTOR } from '../../common';
+import { t } from '../../localize';
 
 export const args = [
   'index',
@@ -29,7 +30,7 @@ class FenomArgumentCompletionProvider extends FenomCompletionProvider implements
 
   createCompletionItem(name: string): CompletionItem {
     const item = new CompletionItem(name, CompletionItemKind.Keyword);
-    item.documentation = new MarkdownString(l10n.t(`var.foreach.${name}`));
+    item.documentation = new MarkdownString(t(`var.foreach.${name}`));
 
     return item;
   }

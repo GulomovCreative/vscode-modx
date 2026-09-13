@@ -1,8 +1,8 @@
-import { l10n } from 'vscode';
 import type { SnippetData, SnippetProp } from '../../../schemas/snippets/';
+import { t } from '../../../localize';
 
 export const name = 'FormItStateOptions';
-export const description = l10n.t('FormItStateOptions.description');
+export const description = t('FormItStateOptions.description');
 
 export const link = 'formit.formitstateoptions';
 
@@ -24,7 +24,7 @@ export const props = [
   {
     name: 'toPlaceholder',
   },
-].map(prop => ({ ...prop, description: l10n.t(`${name}.prop.${prop.name}`) })) as SnippetProp[];
+].map(prop => ({ ...prop, description: t(`${name}.prop.${prop.name}`) })) as SnippetProp[];
 
 export default {
   name,
