@@ -46,11 +46,9 @@
 		"onLanguage:fenom"
 	],
 	"main": "./dist/extension.js",
+	"browser": "./dist/web/extension.js",
 	"capabilities": {
-		"virtualWorkspaces": {
-			"supported": "limited",
-			"description": "In virtual workspaces, resolving and finding references across files is not supported."
-		}
+		"virtualWorkspaces": true
 	},
 	"l10n": "./l10n",
 	"contributes": {
@@ -120,9 +118,10 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run sync-grammars && npm run esbuild-base -- --minify",
+		"vscode:prepublish": "npm run sync-grammars && npm run esbuild-base -- --minify && npm run esbuild-web -- --minify",
 		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
-		"esbuild": "npm run esbuild-base -- --sourcemap",
+		"esbuild-web": "esbuild ./src/extension.ts --bundle --outfile=dist/web/extension.js --external:vscode --format=cjs --platform=browser",
+		"esbuild": "npm run esbuild-base -- --sourcemap && npm run esbuild-web -- --sourcemap",
 		"esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
 		"package": "vsce package",
 		"publish": "vsce publish",

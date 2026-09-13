@@ -6,11 +6,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Fixed
+### Added
 
-- The Marketplace badges in the readme render again. shields.io retired its
-  Visual Studio Marketplace badges, and all three showed as "retired badge" on
-  the Marketplace page itself.
+- The extension runs in the browser: github.dev, vscode.dev and any other
+  virtual workspace. It ships a second bundle built for a web extension host,
+  and `capabilities.virtualWorkspaces` no longer warns about limited support.
 
 ### Changed
 
@@ -36,6 +36,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   a chunk is offered at all. Where a construct ends was decided by a regular
   expression that searched the current line and did not stop at `]]`, so
   `[[a]] … [[b]]` read as one tag with the cursor inside it.
+- The Marketplace badges in the readme render again. shields.io retired its
+  Visual Studio Marketplace badges, and all three showed as "retired badge" on
+  the Marketplace page itself.
 
 ## [1.1.0]
 

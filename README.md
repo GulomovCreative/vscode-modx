@@ -14,6 +14,16 @@ Intelligent MODX, pdoTools and fenom tooling for VS Code.
 
 VS Code 1.81 or newer.
 
+## Where it runs
+
+Locally, and over Remote-SSH, Dev Containers, WSL and Remote Tunnels — there the
+extension runs on the remote host against a real file system.
+
+In the browser as well: github.dev, vscode.dev without a clone, and any other
+virtual workspace. Files are addressed by URI rather than by path, so `@FILE`
+completion, Go to Definition and the block names collected through `{extends}`
+and `{use}` follow whatever scheme the workspace uses.
+
 ## Installation
 
 - Press `F1` and run `Extensions: Install Extensions`.
