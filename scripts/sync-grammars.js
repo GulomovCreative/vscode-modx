@@ -13,8 +13,11 @@ const ROOT = path.resolve(__dirname, '..');
 const SOURCES = [
   { package: '@gulomov/modx-tmlanguage', file: 'modx.tmLanguage.json', target: 'languages/modx.tmLanguage.json' },
   { package: '@gulomov/fenom-tmlanguage', file: 'fenom.tmLanguage.json', target: 'languages/fenom.tmLanguage.json' },
-  // Конфигурацию языка поставляет только пакет Fenom; у MODX она своя и
-  // лежит в languages/modx-configuration.json.
+  {
+    package: '@gulomov/modx-tmlanguage',
+    file: 'language-configuration.json',
+    target: 'languages/modx-configuration.json',
+  },
   {
     package: '@gulomov/fenom-tmlanguage',
     file: 'language-configuration.json',

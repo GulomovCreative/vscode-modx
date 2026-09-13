@@ -345,6 +345,7 @@
     "value": {
       "patterns": [
         {
+          "comment": "A property value in backticks. The end pattern carries the same blank-line escape as the tag rules: without it an unterminated value survives to the end of the file, and one forgotten backtick colours the rest of the document as a string.",
           "name": "string.other.modx",
           "begin": "\\`",
           "beginCaptures": {
@@ -364,9 +365,9 @@
               "include": "#integer"
             }
           ],
-          "end": "\\`",
+          "end": "(\\`)|(?=^[ \\t]*$)",
           "endCaptures": {
-            "0": {
+            "1": {
               "name": "punctuation.definition.string.end.modx"
             }
           },
