@@ -49,6 +49,8 @@ interface LineShape {
   boundary?: 'open' | 'middle' | 'case' | 'close'
 }
 
+const HTML_TAG = /<(\/?)([a-zA-Z][\w:-]*)((?:"[^"]*"|'[^']*'|[^>'"])*)>/g;
+
 /** Теги HTML в строке, без содержимого конструкций шаблона. */
 function htmlDelta(line: string): { leading: number, delta: number } {
   let leading = 0;
@@ -156,7 +158,7 @@ function modxDelta(line: string, tokens: Token[]): { leading: number, delta: num
   return { leading, delta: leading ? delta + 1 : delta };
 }
 
-function shapeOf(line: string, language: TemplateLanguage): LineShape {
+function shapeOf(line: string, html: string, language: TemplateLanguage): LineShape {
   const trimmed = line.trim();
 
   if (!trimmed) {
@@ -164,25 +166,25 @@ function shapeOf(line: string, language: TemplateLanguage): LineShape {
   }
 
   const tokens = scan(line, language);
-  const html = htmlDelta(stripTemplate(line, tokens));
+  const htmlShape = htmlDelta(html);
   const template = language === 'fenom' ? fenomDelta(tokens) : modxDelta(line, tokens);
 
   return {
-    dedent: html.leading + template.leading,
-    delta: html.delta + template.delta,
+    dedent: htmlShape.leading + template.leading,
+    delta: htmlShape.delta + template.delta,
     boundary: template.boundary,
   };
 }
 
 /** Конструкции шаблона заменяются пробелами, чтобы HTML в них не считался. */
-function stripTemplate(line: string, tokens: Token[]): string {
+function stripTemplate(tokens: Token[]): string {
   let result = '';
 
   for (const token of tokens) {
     result += token.kind === 'text' ? token.value : ' '.repeat(token.value.length);
   }
 
-  return result || line;
+  return result;
 }
 
 /** Разметка строк: что заморожено, а что продолжает многострочную конструкцию. */
@@ -214,7 +216,9 @@ function lineRoles(text: string, language: TemplateLanguage) {
   // строки, закрывающая строка возвращается на её уровень.
   const continuation = new Map<number, { opener: number, closing: boolean }>();
 
-  for (const token of scan(text, language)) {
+  const tokens = scan(text, language);
+
+  for (const token of tokens) {
     if (token.kind === 'text' || !token.value.includes('\n')) {
       continue;
     }
@@ -244,12 +248,69 @@ function lineRoles(text: string, language: TemplateLanguage) {
     }
   }
 
-  return { lines, frozen, continuation };
+  // Тег HTML тоже бывает многострочным — с Tailwind это обычное дело. Считать
+  // его построчно нельзя: открывающая строка без ">" ни под одно выражение не
+  // подходит, вложенность не растёт, а закрывающий тег её всё равно уменьшает,
+  // и дальше весь файл уезжает влево на уровень за каждый такой тег.
+  const stripped = stripTemplate(tokens);
+  const tags = [...stripped.matchAll(HTML_TAG)];
+
+  // Сначала границы, и только потом раскладка по строкам: строка бывает
+  // одновременно продолжением одного тега и началом следующего.
+  for (const match of tags) {
+    const start = match.index ?? 0;
+    const first = lineAt(start);
+    const last = lineAt(start + match[0].length - 1);
+
+    // На уровень открывающей строки возвращается только та, где закрывающая
+    // скобка стоит сама по себе. Если на ней кончается значение атрибута, это
+    // продолжение списка атрибутов, и отступ у неё такой же, как у соседей.
+    const tail = lines[last].slice(0, start + match[0].length - offsets[last]).trim();
+    const closesOnOwnLine = tail === '>' || tail === '/>';
+
+    for (let index = first + 1; index <= last; index++) {
+      continuation.set(index, { opener: first, closing: index === last && closesOnOwnLine });
+    }
+  }
+
+  const htmlByLine = lines.map(() => '');
+
+  // Строку-продолжение форматтер не разбирает — она получает отступ от своей
+  // открывающей строки. Значит и разметку с неё нужно считать там же, иначе
+  // тег, закрывшийся на такой строке, из подсчёта вложенности выпадет.
+  const owner = (index: number) => continuation.get(index)?.opener ?? index;
+
+  const appendPlain = (from: number, to: number) => {
+    for (let index = lineAt(from); index <= lineAt(Math.max(to - 1, from)); index++) {
+      const start = Math.max(from, offsets[index]);
+      const end = Math.min(to, offsets[index] + lines[index].length);
+
+      if (end > start) {
+        htmlByLine[owner(index)] += stripped.slice(start, end);
+      }
+    }
+  };
+
+  let cursor = 0;
+
+  for (const match of tags) {
+    const start = match.index ?? 0;
+
+    appendPlain(cursor, start);
+    // Тег целиком приписывается одной строке: вложенность меняется один раз и
+    // там, где стоит его отступ.
+    htmlByLine[owner(lineAt(start))] += match[0].replace(/\n/g, ' ');
+    cursor = start + match[0].length;
+  }
+
+  appendPlain(cursor, stripped.length);
+
+  return { lines, frozen, continuation, htmlByLine };
 }
 
 export function format(text: string, language: TemplateLanguage, options: FormatOptions): string {
   const unit = options.insertSpaces ? ' '.repeat(options.tabSize) : '\t';
-  const { lines, frozen, continuation } = lineRoles(text, language);
+  const { lines, frozen, continuation, htmlByLine } = lineRoles(text, language);
   const result: string[] = [];
   const indents: number[] = [];
 
@@ -288,7 +349,7 @@ export function format(text: string, language: TemplateLanguage, options: Format
       return;
     }
 
-    const { dedent, delta, boundary } = shapeOf(line, language);
+    const { dedent, delta, boundary } = shapeOf(line, htmlByLine[index], language);
 
     let indent: number;
 

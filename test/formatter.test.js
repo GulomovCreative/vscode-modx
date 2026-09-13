@@ -174,6 +174,52 @@ describe('Форматирование', () => {
 // F-29: объявив modx и fenom участниками HTML, расширение отдаёт их
 // HTML-серверу, и тот вешает на них своё форматирование диапазона. Собственные
 // провайдеры имеют приоритет и забирают и «Format Document», и «Format Selection».
+// Тег HTML на нескольких строках — с Tailwind обычное дело. Раньше он не
+// подходил ни под одно построчное выражение, поэтому вложенность на нём не
+// росла, а закрывающий тег её всё равно уменьшал: каждый такой тег уводил
+// остаток файла на уровень влево.
+describe('Форматирование: многострочные теги HTML', () => {
+  let format;
+
+  before(async () => {
+    ({ format } = await loadModule('formatter.ts'));
+  });
+
+  const check = (title, language, input, expected) => {
+    test(title, () => {
+      const actual = format(input, language, OPTIONS);
+
+      assert.equal(actual, expected);
+      assert.equal(format(actual, language, OPTIONS), actual, 'повторное форматирование меняет результат');
+    });
+  };
+
+  check('атрибуты вкладываются, закрывающая скобка возвращается на уровень тега', 'fenom',
+    ['{block "a"}', '<div', 'class="x"', 'aria-hidden="true"', '>', '<span>text</span>', '</div>', '{/block}'].join('\n'),
+    ['{block "a"}', '  <div', '    class="x"', '    aria-hidden="true"', '  >', '    <span>text</span>', '  </div>', '{/block}'].join('\n'),
+  );
+
+  check('следующие строки не уезжают влево', 'fenom',
+    ['<div>', '<p', 'id="x"', '>y</p>', '<b>z</b>', '</div>'].join('\n'),
+    ['<div>', '  <p', '    id="x"', '  >y</p>', '  <b>z</b>', '</div>'].join('\n'),
+  );
+
+  check('значение атрибута на нескольких строках не дедентится в конце', 'fenom',
+    ['{block "a"}', '<div class="one', 'two', 'three">', '<span>text</span>', '</div>', '{/block}'].join('\n'),
+    ['{block "a"}', '  <div class="one', '    two', '    three">', '    <span>text</span>', '  </div>', '{/block}'].join('\n'),
+  );
+
+  check('одиночный элемент не открывает вложенность', 'fenom',
+    ['{if $a}', '<img', 'src="x"', '>', '{/if}', '<p>после</p>'].join('\n'),
+    ['{if $a}', '  <img', '    src="x"', '  >', '{/if}', '<p>после</p>'].join('\n'),
+  );
+
+  check('то же самое в MODX', 'modx',
+    ['<div', 'class="[[*alias]]"', '>', '<span>[[*pagetitle]]</span>', '</div>'].join('\n'),
+    ['<div', '  class="[[*alias]]"', '>', '  <span>[[*pagetitle]]</span>', '</div>'].join('\n'),
+  );
+});
+
 describe('Провайдеры форматирования', () => {
   const { getProvider, documentWithCursor } = require('./helpers');
 

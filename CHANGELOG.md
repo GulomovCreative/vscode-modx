@@ -31,6 +31,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Formatting no longer walks a template left. An HTML tag written over several
+  lines — normal with Tailwind — matched none of the per-line patterns, so the
+  nesting never grew on it while the closing tag still shrank it: every such tag
+  cost one level, and by the end of the file `{/block}` sat four tabs deep.
+  Attribute lines are now indented as a continuation, and a closing `>` on a
+  line of its own comes back to the level of the tag it opened.
 - Suggestions typed between two tags on the same line behave as they do outside
   a tag: a system setting completes to `[[++name]]` instead of a bare name, and
   a chunk is offered at all. Where a construct ends was decided by a regular
