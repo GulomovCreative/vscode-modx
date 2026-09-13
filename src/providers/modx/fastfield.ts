@@ -1,9 +1,10 @@
-import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, MarkdownString, languages, SnippetString, Range, l10n } from 'vscode';
+import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, MarkdownString, languages, SnippetString, Range } from 'vscode';
 
 import { MODX_SELECTOR, getSortText } from '../../common';
 import { ModxCompletionProvider } from './autocomplete';
 import fields from '../../schemas/resource';
 import { DOCUMENTATION_URL, fieldPrefixes, globalArrays } from '../../schemas/fastfield';
+import { t } from '../../localize';
 
 class ModxFastFieldCompletion extends ModxCompletionProvider implements CompletionItemProvider {
   provideCompletionItems(
@@ -36,7 +37,7 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
         ? new SnippetString(`${name}.\${1:key}`)
         : new SnippetString(`[[${tokens}${name}.\${1:key}]]`);
       item.detail = `[[${tokens}${name}.key]]`;
-      item.documentation = this.createDocumentation(l10n.t(`fastfield.${name}`));
+      item.documentation = this.createDocumentation(t(`fastfield.${name}`));
 
       return item;
     });
@@ -47,7 +48,7 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
       ? new SnippetString('${1:id}.${2:pagetitle}')
       : new SnippetString(`[[${tokens}\${1:id}.\${2:pagetitle}]]`);
     resourceSnippet.detail = `[[${tokens}15.pagetitle]]`;
-    resourceSnippet.documentation = this.createDocumentation(l10n.t('fastfield.resource'));
+    resourceSnippet.documentation = this.createDocumentation(t('fastfield.resource'));
     resourceSnippet.filterText = tokens + 'id';
 
     items.push(resourceSnippet);
@@ -63,7 +64,7 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
 
     const fieldItems = fields.map((field, index) => {
       const item = this.createCompletionItem(field, index, isInsideTag, tokens, wordRange, prefix);
-      item.documentation = this.createDocumentation(l10n.t(`resource.${field}`));
+      item.documentation = this.createDocumentation(t(`resource.${field}`));
       item.detail = `[[${prefix}.${field}]]`;
 
       if (!isInsideTag) {
@@ -76,7 +77,7 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
     const prefixItems = fieldPrefixes.map((name, index) => {
       const item = this.createCompletionItem(name, fields.length + index, isInsideTag, tokens, wordRange, prefix);
       item.kind = CompletionItemKind.Snippet;
-      item.documentation = this.createDocumentation(l10n.t(`fastfield.${name.slice(0, -1)}`));
+      item.documentation = this.createDocumentation(t(`fastfield.${name.slice(0, -1)}`));
       item.detail = `[[${prefix}.${name}key]]`;
 
       const insertName = `${name}\${1:name}`;
@@ -115,7 +116,7 @@ class ModxFastFieldCompletion extends ModxCompletionProvider implements Completi
   createDocumentation(description: string): MarkdownString {
     const documentation = new MarkdownString(description);
     documentation.appendMarkdown(`\n\n`);
-    documentation.appendMarkdown(`[${l10n.t('reference')}](${DOCUMENTATION_URL})`);
+    documentation.appendMarkdown(`[${t('reference')}](${DOCUMENTATION_URL})`);
 
     return documentation;
   }

@@ -1,10 +1,11 @@
-import { CompletionItem, CompletionItemKind, MarkdownString, l10n } from 'vscode';
+import { CompletionItem, CompletionItemKind, MarkdownString } from 'vscode';
 import { getSortText } from '../../common';
 
 import pdoToolsSnippets from './pdoTools/';
 import FormItSnippets from './FormIt/';
 import miniShop2Snippets from './miniShop2/';
 import FetchIt from './FetchIt';
+import { t } from '../../localize';
 
 export interface SnippetProp {
   name: string
@@ -44,7 +45,7 @@ export function createPropCompletionItem(
 
   if (prop.example) {
     item.documentation.appendMarkdown('\n\n');
-    item.documentation.appendMarkdown(l10n.t('example') + ':');
+    item.documentation.appendMarkdown(t('example') + ':');
     item.documentation.appendCodeblock(prop.example);
   }
 

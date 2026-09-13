@@ -1,4 +1,3 @@
-import { l10n } from 'vscode';
 import { joinProps } from '../../../common';
 import { SnippetData, SnippetProp } from '../../snippets/';
 import { commonProps } from '../pdoTools';
@@ -11,6 +10,7 @@ import msGetOrderData from './msGetOrder';
 import msGalleryData from './msGallery';
 import msOptionsData from './msOptions';
 import msProductOptionsData from './msProductOptions';
+import { t } from '../../../localize';
 
 
 class ms2Snippet implements SnippetData {
@@ -24,11 +24,11 @@ class ms2Snippet implements SnippetData {
     props,
   }: SnippetData) {
     this.name = name;
-    this.description = l10n.t(`${name}.description`);
+    this.description = t(`${name}.description`);
     this.link = 'https://docs.modx.pro/components/minishop2/snippets/' + name.toLowerCase();
     this.props = joinProps(
-      props.map(prop => ({ ...prop, description: l10n.t(`${name}.prop.${prop.name}`) })),
-      commonProps.map(prop => ({ ...prop, description: l10n.t(`pdoTools.prop.${prop.name}`) }))
+      props.map(prop => ({ ...prop, description: t(`${name}.prop.${prop.name}`) })),
+      commonProps.map(prop => ({ ...prop, description: t(`pdoTools.prop.${prop.name}`) }))
     );
   }
 }

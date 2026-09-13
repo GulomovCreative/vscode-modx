@@ -10,7 +10,6 @@ import {
   Uri,
   languages,
   workspace,
-  l10n,
 } from 'vscode';
 
 import { FENOM_SELECTOR, getSortText } from '../../common';
@@ -18,6 +17,7 @@ import { FenomCompletionProvider } from './autocomplete';
 import { type Context } from '../autocomplete';
 import { getElementsUri, pathSegments } from '../file/autocomplete';
 import { getDocumentText } from '../../cache';
+import { t } from '../../localize';
 
 const BLOCK_NAME_PATTERN = /\{block\s+['"]([^'"]+)['"]/g;
 const TEMPLATE_REF_PATTERN = /\{(?:extends|use)\s+['"]([^'"]+)['"]/g;
@@ -66,7 +66,7 @@ class FenomBlockNameCompletion extends FenomCompletionProvider implements Comple
     const item = new CompletionItem(name, CompletionItemKind.Text);
     item.sortText = getSortText(index, name);
     item.detail = `{block '${name}'}`;
-    item.documentation = new MarkdownString(l10n.t('fenom.block.name'));
+    item.documentation = new MarkdownString(t('fenom.block.name'));
     item.insertText = name;
 
     return item;

@@ -1,4 +1,3 @@
-import { l10n } from 'vscode';
 import { joinProps } from '../../../common';
 import { SnippetData, SnippetProp } from '../../snippets/';
 
@@ -12,6 +11,7 @@ import pdoFieldData from './pdoField';
 import pdoTitleData from './pdoTitle';
 import pdoMenuData from './pdoMenu';
 import pdoPageData from './pdoPage';
+import { t } from '../../../localize';
 
 
 class PdoSnippet implements SnippetData {
@@ -25,11 +25,11 @@ class PdoSnippet implements SnippetData {
     props,
   }: SnippetData) {
     this.name = name;
-    this.description = l10n.t(`${name}.description`);
+    this.description = t(`${name}.description`);
     this.link = 'https://docs.modx.pro/components/pdotools/snippets/' + name.toLowerCase();
     this.props = joinProps(
-      props.map(prop => ({ ...prop, description: l10n.t(`${name}.prop.${prop.name}`) })),
-      commonProps.map(prop => ({ ...prop, description: l10n.t(`pdoTools.prop.${prop.name}`) }))
+      props.map(prop => ({ ...prop, description: t(`${name}.prop.${prop.name}`) })),
+      commonProps.map(prop => ({ ...prop, description: t(`pdoTools.prop.${prop.name}`) }))
     );
   }
 }
@@ -43,7 +43,7 @@ export const commonProps: SnippetProp[] = [
     name: 'parents',
     default: {
       type: 'text',
-      value: l10n.t('pdoTools.prop.parents.default'),
+      value: t('pdoTools.prop.parents.default'),
     },
   },
   {
@@ -130,7 +130,7 @@ export const commonProps: SnippetProp[] = [
     type: 'number',
     default: {
       type: 'text',
-      value: l10n.t('pdoTools.prop.last.default'),
+      value: t('pdoTools.prop.last.default'),
     },
   },
   {
@@ -269,14 +269,14 @@ export const commonProps: SnippetProp[] = [
     name: 'cache_key',
     default: {
       type: 'text',
-      value: l10n.t('pdoTools.prop.cache_key.default'),
+      value: t('pdoTools.prop.cache_key.default'),
     },
   },
   {
     name: 'cache_handler',
     default: {
       type: 'text',
-      value: l10n.t('pdoTools.prop.cache_handler.default'),
+      value: t('pdoTools.prop.cache_handler.default'),
     },
   },
   {
@@ -284,7 +284,7 @@ export const commonProps: SnippetProp[] = [
     type: 'number',
     default: {
       type: 'text',
-      value: l10n.t('pdoTools.prop.cacheTime.default'),
+      value: t('pdoTools.prop.cacheTime.default'),
     },
   },
 ];

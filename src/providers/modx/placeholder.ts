@@ -1,8 +1,9 @@
-import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, CompletionContext, MarkdownString, languages, SnippetString, Range, env, CancellationToken, l10n } from 'vscode';
+import { TextDocument, Position, CompletionItemProvider, CompletionItem, CompletionItemKind, CompletionContext, MarkdownString, languages, SnippetString, Range, env, CancellationToken } from 'vscode';
 
 import { MODX_SELECTOR, getSortText } from '../../common';
 import { ModxCompletionProvider } from './autocomplete';
 import fields, { DOCUMENTATION_URL } from '../../schemas/resource';
+import { t } from '../../localize';
 
 class ModxPlaceholderCompletion extends ModxCompletionProvider implements CompletionItemProvider {
   provideCompletionItems(
@@ -45,11 +46,11 @@ class ModxPlaceholderCompletion extends ModxCompletionProvider implements Comple
     item.sortText = getSortText(index, name);
 
     if (name.startsWith('modx.user.')) {
-      item.documentation = new MarkdownString(l10n.t(name.replace(/^modx\./, '')));
+      item.documentation = new MarkdownString(t(name.replace(/^modx\./, '')));
     } else {
-      item.documentation = new MarkdownString(l10n.t(`resource.${name}`));
+      item.documentation = new MarkdownString(t(`resource.${name}`));
       item.documentation.appendMarkdown(`\n\n`);
-      item.documentation.appendMarkdown(`[${l10n.t('reference')}](${DOCUMENTATION_URL.replace('{lang}', env.language || 'en' )})`);
+      item.documentation.appendMarkdown(`[${t('reference')}](${DOCUMENTATION_URL.replace('{lang}', env.language || 'en' )})`);
     }
 
     item.detail = `[[${tokens + name}]]`;

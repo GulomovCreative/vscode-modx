@@ -1,8 +1,8 @@
-import { l10n } from 'vscode';
 import type { SnippetData, SnippetProp } from '../../../schemas/snippets/';
+import { t } from '../../../localize';
 
 export const name = 'FormItRetriever';
-export const description = l10n.t('FormItRetriever.description');
+export const description = t('FormItRetriever.description');
 
 export const link = 'formit.formitretriever';
 
@@ -23,7 +23,7 @@ export const props = [
     name: 'storeLocation',
     default: 'cache',
   },
-].map(prop => ({ ...prop, description: l10n.t(`${name}.prop.${prop.name}`) })) as SnippetProp[];
+].map(prop => ({ ...prop, description: t(`${name}.prop.${prop.name}`) })) as SnippetProp[];
 
 export default {
   name,
