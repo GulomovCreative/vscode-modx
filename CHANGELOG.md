@@ -19,6 +19,28 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   having on a whole page and wrong on a chunk that opens an element another
   chunk closes — that is why it is not the default.
 
+### Changed
+
+- The MODX language configuration comes from its grammar package, as the Fenom
+  one already did. Typing `[[` closes it with `]]`, `[[…]]` works as a pair to
+  select and surround with, and `<`, `>` and `<!-- -->` are understood the way
+  they are in HTML.
+- MODX no longer re-indents while a tag is typed, and that is a repair rather
+  than a loss: the rules it used outdented **every** line holding a tag that
+  opened and closed on itself. In a template where half the lines are
+  `[[*pagetitle]]`, typing walked the indentation left a level at a time.
+  `Format Document` re-indents instead, and it counts multi-line calls properly.
+- Folding in MODX follows `<!-- #region -->` and `<!-- #endregion -->` instead
+  of bare `[[` and `]]` at the start of a line. The old markers are per-line —
+  a line is either a start or an end — so `[[*pagetitle]]` opened a region that
+  never closed.
+
+### Fixed
+
+- A forgotten backtick in a property value no longer colours the rest of the
+  file as a string: the value ends at a blank line as well as at its closing
+  backtick.
+
 ## [1.2.0]
 
 ### Added
