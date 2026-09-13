@@ -21,6 +21,10 @@
     ["'", "'"],
     ["<", ">"]
   ],
+  "indentationRules": {
+    "increaseIndentPattern": "\\[\\[(?!-)(?:[^\\]`]|`[^`]*`|\\](?!\\]))*$",
+    "decreaseIndentPattern": "^(?:[^\\[`]|`[^`]*`|\\[(?!\\[))*\\]\\]"
+  },
   "folding": {
     "markers": {
       "start": "^\\s*<!--\\s*#region\\b",
