@@ -3,6 +3,12 @@ node_modules/
 out/
 dist
 
+# Сборка VS Code, которую @vscode/test-web скачивает для прогона расширения
+# в браузерном хосте. В пакет не попадает — vsce исключает её сам, — но в
+# рабочем дереве остаётся после каждого прогона.
+.vscode-test-web/
+.vscode-test/
+
 logs
 *.log
 npm-debug.log*
