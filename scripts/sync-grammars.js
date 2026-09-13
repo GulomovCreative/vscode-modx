@@ -79,54 +79,130 @@ function version(packageName) {
   try {
     return require(`${packageName}/package.json`).version;
   } catch {
+    // package.json не объявлен в exports — читаем из node_modules напрямую
+  }
+
+  try {
     return JSON.parse(fs.readFileSync(
       path.join(ROOT, 'node_modules', packageName, 'package.json'),
       'utf8',
     )).version;
+  } catch {
+    return undefined;
   }
 }
 
-const check = process.argv.includes('--check');
-const problems = [];
-let copied = 0;
-
-for (const source of SOURCES) {
-  const from = resolveFile(source.package, source.file);
-  const to = path.join(ROOT, source.target);
-
-  if (!from) {
-    problems.push(`${source.package}: не найден ${source.file}`);
-    continue;
+/**
+ * Версии пакетов, установленные в node_modules, по данным package-lock.json.
+ *
+ * Отсутствие файла или записи в нём не считается ошибкой: скрипт должен
+ * работать и там, где дерево зависимостей собрано иначе.
+ */
+function lockedVersions() {
+  let lock;
+  try {
+    lock = JSON.parse(fs.readFileSync(path.join(ROOT, 'package-lock.json'), 'utf8'));
+  } catch {
+    return {};
   }
 
-  const content = normalize(fs.readFileSync(from, 'utf8'));
-  const current = fs.existsSync(to) ? normalize(fs.readFileSync(to, 'utf8')) : undefined;
-
-  if (current === content) {
-    console.log(`совпадает ${source.target}  (${source.package}@${version(source.package)})`);
-    continue;
+  const versions = {};
+  for (const [location, entry] of Object.entries(lock.packages || {})) {
+    if (location.startsWith('node_modules/') && entry.version) {
+      versions[location.slice('node_modules/'.length)] = entry.version;
+    }
   }
 
-  if (check) {
-    problems.push(
-      `${source.target} расходится с ${source.package}@${version(source.package)}`,
-    );
-    continue;
-  }
-
-  fs.writeFileSync(to, content);
-  copied++;
-  console.log(`обновлён  ${source.target}  (${source.package}@${version(source.package)})`);
+  return versions;
 }
 
-if (problems.length) {
-  console.error('\n' + problems.join('\n'));
-  if (check) {
-    console.error('\nЗапустите: npm run sync-grammars');
+/**
+ * Пакеты, установленная версия которых разошлась с зафиксированной.
+ *
+ * Проверка стоит до первой записи, потому что иначе устаревший node_modules
+ * тихо откатывает грамматику: `npm run publish` после `git pull` без `npm ci`
+ * переписал languages/ содержимым предыдущей версии пакета. В тот раз сборка
+ * упала на следующем файле, которого в старой версии ещё не было, но совпади
+ * набор файлов — и в Marketplace уехала бы подсветка на версию назад.
+ */
+function staleInstalls(packages, locked, installed) {
+  const stale = [];
+
+  for (const name of packages) {
+    const expected = locked[name];
+    const actual = installed(name);
+
+    if (expected && actual && expected !== actual) {
+      stale.push({ package: name, installed: actual, expected });
+    }
   }
-  process.exit(1);
+
+  return stale;
 }
 
-if (!check && copied === 0) {
-  console.log('\nвсё уже синхронно');
+function main() {
+  const check = process.argv.includes('--check');
+  const stale = staleInstalls(
+    [...new Set(SOURCES.map(source => source.package))],
+    lockedVersions(),
+    version,
+  );
+
+  if (stale.length) {
+    for (const { package: name, installed, expected } of stale) {
+      console.error(`${name}: установлена ${installed}, а package-lock.json ждёт ${expected}`);
+    }
+    console.error('\nnode_modules отстал от lock-файла. Запустите: npm ci');
+    process.exit(1);
+  }
+
+  const problems = [];
+  let copied = 0;
+
+  for (const source of SOURCES) {
+    const from = resolveFile(source.package, source.file);
+    const to = path.join(ROOT, source.target);
+
+    if (!from) {
+      problems.push(`${source.package}: не найден ${source.file}`);
+      continue;
+    }
+
+    const content = normalize(fs.readFileSync(from, 'utf8'));
+    const current = fs.existsSync(to) ? normalize(fs.readFileSync(to, 'utf8')) : undefined;
+
+    if (current === content) {
+      console.log(`совпадает ${source.target}  (${source.package}@${version(source.package)})`);
+      continue;
+    }
+
+    if (check) {
+      problems.push(
+        `${source.target} расходится с ${source.package}@${version(source.package)}`,
+      );
+      continue;
+    }
+
+    fs.writeFileSync(to, content);
+    copied++;
+    console.log(`обновлён  ${source.target}  (${source.package}@${version(source.package)})`);
+  }
+
+  if (problems.length) {
+    console.error('\n' + problems.join('\n'));
+    if (check) {
+      console.error('\nЗапустите: npm run sync-grammars');
+    }
+    process.exit(1);
+  }
+
+  if (!check && copied === 0) {
+    console.log('\nвсё уже синхронно');
+  }
 }
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = { lockedVersions, staleInstalls };
