@@ -103,6 +103,21 @@
 					"type": "string",
 					"default": "/core/elements/",
 					"description": "%vscode-modx.elementsPath.description%"
+				},
+				"vscode-modx.diagnostics": {
+					"type": "string",
+					"default": "unclosed",
+					"enum": [
+						"off",
+						"unclosed",
+						"all"
+					],
+					"enumDescriptions": [
+						"%vscode-modx.diagnostics.off%",
+						"%vscode-modx.diagnostics.unclosed%",
+						"%vscode-modx.diagnostics.all%"
+					],
+					"description": "%vscode-modx.diagnostics.description%"
 				}
 			}
 		},

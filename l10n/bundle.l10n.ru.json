@@ -996,5 +996,17 @@
 	"msProductOptions.prop.product": "Идентификатор товара. Если не указан, используется id текущего документа.",
 	"msProductOptions.prop.onlyOptions": "Выводить только этот список опций, указанный через запятую.",
 	"msProductOptions.prop.ignoreOptions": "Опции, которые не нужно выводить в списке, через запятую.",
-	"msProductOptions.prop.groups": "Выводить опции только указанных групп (название или идентификатор категории через запятую)."
+	"msProductOptions.prop.groups": "Выводить опции только указанных групп (название или идентификатор категории через запятую).",
+	"diagnostic.unclosedModxTag": "Тег MODX не закрыт.",
+	"diagnostic.unclosedModxComment": "Комментарий не закрыт.",
+	"diagnostic.unclosedFenomTag": "Тег Fenom не закрыт.",
+	"diagnostic.unclosedFenomComment": "Комментарий не закрыт.",
+	"diagnostic.unclosedFenomIgnore": "Блок ignore не закрыт.",
+	"diagnostic.unclosedBlock": "Тег {0} не закрыт.",
+	"diagnostic.unexpectedClosing": "Закрывающему тегу {0} нечего закрывать.",
+	"diagnostic.mismatchedClosing": "Закрывающий тег {0} не соответствует открытому {1}.",
+	"diagnostic.middleOutsideBlock": "Тег {0} имеет смысл только внутри {1}.",
+	"diagnostic.unclosedElement": "Элемент {0} не закрыт.",
+	"diagnostic.unexpectedClosingElement": "Закрывающему тегу {0} нечего закрывать.",
+	"diagnostic.mismatchedClosingElement": "Закрывающий тег {0} закрывает {1}."
 }

@@ -996,5 +996,17 @@
 	"msProductOptions.prop.product": "Product identifier. If not indicated, id of the current document is used.",
 	"msProductOptions.prop.onlyOptions": "Display only this option list, separated by commas.",
 	"msProductOptions.prop.ignoreOptions": "The options, which do not need to be listed, separated by commas.",
-	"msProductOptions.prop.groups": "To display only indicated group options (category name or identifier, separated by commas)."
+	"msProductOptions.prop.groups": "To display only indicated group options (category name or identifier, separated by commas).",
+	"diagnostic.unclosedModxTag": "The MODX tag is never closed.",
+	"diagnostic.unclosedModxComment": "The comment is never closed.",
+	"diagnostic.unclosedFenomTag": "The Fenom tag is never closed.",
+	"diagnostic.unclosedFenomComment": "The comment is never closed.",
+	"diagnostic.unclosedFenomIgnore": "The ignore block is never closed.",
+	"diagnostic.unclosedBlock": "Tag {0} is never closed.",
+	"diagnostic.unexpectedClosing": "Closing tag {0} has nothing to close.",
+	"diagnostic.mismatchedClosing": "Closing tag {0} does not match the open {1}.",
+	"diagnostic.middleOutsideBlock": "Tag {0} only belongs inside {1}.",
+	"diagnostic.unclosedElement": "Element {0} is never closed.",
+	"diagnostic.unexpectedClosingElement": "Closing tag {0} has nothing to close.",
+	"diagnostic.mismatchedClosingElement": "Closing tag {0} closes {1}."
 }

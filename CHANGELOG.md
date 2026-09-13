@@ -6,6 +6,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Structural problems in a template are reported in the Problems panel: a
+  construct with no end — `[[`, `[[-`, `{`, `{*`, `{ignore}`, a backtick
+  without its pair — and Fenom block tags that do not pair up, including a
+  closing tag that closes the wrong block and `{else}` or `{case}` outside the
+  block they belong to. `{set $x = 1}` and `{var $x = 1}` are instructions, not
+  blocks, and are left alone.
+- `vscode-modx.diagnostics` chooses how much is reported: `off`, `unclosed`
+  (the default) or `all`. `all` adds unpaired HTML elements, which is worth
+  having on a whole page and wrong on a chunk that opens an element another
+  chunk closes — that is why it is not the default.
+
 ## [1.2.0]
 
 ### Added
