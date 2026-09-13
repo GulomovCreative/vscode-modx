@@ -1,4 +1,6 @@
 import { scan, type TemplateLanguage, type Token } from './scanner';
+import { BLOCK_TAGS as FENOM_BLOCK_TAGS, CASE_TAGS as FENOM_CASE_TAGS, MIDDLE_TAGS as FENOM_MIDDLE_TAGS } from './fenom';
+import { HTML_TAG, isSelfContained } from './html';
 
 export type { TemplateLanguage };
 
@@ -16,29 +18,10 @@ export interface FormatOptions {
   insertSpaces: boolean
 }
 
-// Элементы без закрывающего тега.
-const VOID_ELEMENTS = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-  'link', 'meta', 'param', 'source', 'track', 'wbr',
-]);
-
 // Содержимое этих элементов форматируется по своим правилам, поэтому строки
 // внутри остаются как есть.
 const VERBATIM_ELEMENTS = new Set(['pre', 'textarea', 'script', 'style']);
 
-// Парные теги Fenom.
-const FENOM_BLOCK_TAGS = new Set([
-  'if', 'foreach', 'for', 'while', 'switch', 'block', 'filter',
-  'macro', 'autoescape', 'ignore', 'strip', 'escape',
-]);
-
-// Середины ветвления: встают на уровень открывающего тега, как {if} и {else}.
-const FENOM_BRANCH_TAGS = new Set(['else', 'elseif', 'foreachelse', 'forelse']);
-
-// Середины перебора: вкладываются внутрь {switch}, как case в PHP.
-const FENOM_CASE_TAGS = new Set(['case', 'default']);
-
-const FENOM_MIDDLE_TAGS = new Set([...FENOM_BRANCH_TAGS, ...FENOM_CASE_TAGS]);
 
 interface LineShape {
   /** На сколько уровней сдвинуть саму строку относительно текущего. */
@@ -48,8 +31,6 @@ interface LineShape {
   /** Открывает, продолжает или закрывает блок шаблона. */
   boundary?: 'open' | 'middle' | 'case' | 'close'
 }
-
-const HTML_TAG = /<(\/?)([a-zA-Z][\w:-]*)((?:"[^"]*"|'[^']*'|[^>'"])*)>/g;
 
 /** Теги HTML в строке, без содержимого конструкций шаблона. */
 function htmlDelta(line: string): { leading: number, delta: number } {
@@ -61,7 +42,7 @@ function htmlDelta(line: string): { leading: number, delta: number } {
     const [ whole, rawName, attributes = '' ] = match;
     const name = rawName.toLowerCase();
 
-    if (VOID_ELEMENTS.has(name) || attributes.trimEnd().endsWith('/')) {
+    if (isSelfContained(name, attributes)) {
       seenContent = true;
       continue;
     }

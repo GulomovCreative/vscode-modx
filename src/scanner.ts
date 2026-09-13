@@ -19,6 +19,13 @@ export interface Token {
   start: number
   end: number
   value: string
+  /** Область оборвалась концом текста, а не своей закрывающей скобкой. */
+  unterminated: boolean
+}
+
+interface Read {
+  end: number
+  terminated: boolean
 }
 
 export type TemplateLanguage = 'modx' | 'fenom';
@@ -31,7 +38,7 @@ const MODX_COMMENT_OPEN = '[[-';
  * Значение в обратных кавычках может содержать вложенный тег, поэтому кавычки
  * учитываются при поиске конца тега.
  */
-function readModxTag(text: string, from: number): number {
+function readModxTag(text: string, from: number): Read {
   let index = from + MODX_OPEN.length;
   let depth = 1;
   let inBacktick = false;
@@ -69,7 +76,7 @@ function readModxTag(text: string, from: number): number {
       index += MODX_CLOSE.length;
 
       if (depth === 0) {
-        return index;
+        return { end: index, terminated: true };
       }
 
       continue;
@@ -78,11 +85,11 @@ function readModxTag(text: string, from: number): number {
     index++;
   }
 
-  return text.length;
+  return { end: text.length, terminated: false };
 }
 
 /** Тег Fenom кончается на закрывающей скобке вне строки в кавычках. */
-function readFenomTag(text: string, from: number): number {
+function readFenomTag(text: string, from: number): Read {
   let index = from + 1;
   let quote = '';
 
@@ -110,19 +117,21 @@ function readFenomTag(text: string, from: number): number {
     }
 
     if (char === '}') {
-      return index + 1;
+      return { end: index + 1, terminated: true };
     }
 
     index++;
   }
 
-  return text.length;
+  return { end: text.length, terminated: false };
 }
 
-function readUntil(text: string, from: number, terminator: string): number {
+function readUntil(text: string, from: number, terminator: string): Read {
   const index = text.indexOf(terminator, from);
 
-  return index === -1 ? text.length : index + terminator.length;
+  return index === -1
+    ? { end: text.length, terminated: false }
+    : { end: index + terminator.length, terminated: true };
 }
 
 /**
@@ -136,31 +145,37 @@ export function scan(text: string, language: TemplateLanguage): Token[] {
 
   const pushText = (until: number) => {
     if (until > textStart) {
-      tokens.push({ kind: 'text', start: textStart, end: until, value: text.slice(textStart, until) });
+      tokens.push({ kind: 'text', start: textStart, end: until, value: text.slice(textStart, until), unterminated: false });
     }
   };
 
-  const pushToken = (kind: TokenKind, start: number, end: number) => {
+  const pushToken = (kind: TokenKind, start: number, read: Read) => {
     pushText(start);
-    tokens.push({ kind, start, end, value: text.slice(start, end) });
-    textStart = end;
+    tokens.push({
+      kind,
+      start,
+      end: read.end,
+      value: text.slice(start, read.end),
+      unterminated: !read.terminated,
+    });
+    textStart = read.end;
   };
 
   while (index < text.length) {
     if (language === 'modx' && text.startsWith(MODX_OPEN, index)) {
       const isComment = text.startsWith(MODX_COMMENT_OPEN, index);
-      const end = isComment ? readUntil(text, index, MODX_CLOSE) : readModxTag(text, index);
+      const read = isComment ? readUntil(text, index, MODX_CLOSE) : readModxTag(text, index);
 
-      pushToken(isComment ? 'modx-comment' : 'modx-tag', index, end);
-      index = end;
+      pushToken(isComment ? 'modx-comment' : 'modx-tag', index, read);
+      index = read.end;
       continue;
     }
 
     if (language === 'fenom' && text[index] === '{') {
       if (text.startsWith('{*', index)) {
-        const end = readUntil(text, index, '*}');
-        pushToken('fenom-comment', index, end);
-        index = end;
+        const read = readUntil(text, index, '*}');
+        pushToken('fenom-comment', index, read);
+        index = read.end;
         continue;
       }
 
@@ -168,16 +183,15 @@ export function scan(text: string, language: TemplateLanguage): Token[] {
       // способ вставить в шаблон CSS или JavaScript с фигурными скобками.
       const ignore = /^\{ignore\}/.exec(text.slice(index));
       if (ignore) {
-        const closing = text.indexOf('{/ignore}', index);
-        const end = closing === -1 ? text.length : closing + '{/ignore}'.length;
-        pushToken('fenom-ignore', index, end);
-        index = end;
+        const read = readUntil(text, index, '{/ignore}');
+        pushToken('fenom-ignore', index, read);
+        index = read.end;
         continue;
       }
 
-      const end = readFenomTag(text, index);
-      pushToken('fenom-tag', index, end);
-      index = end;
+      const read = readFenomTag(text, index);
+      pushToken('fenom-tag', index, read);
+      index = read.end;
       continue;
     }
 
@@ -187,19 +201,6 @@ export function scan(text: string, language: TemplateLanguage): Token[] {
   pushText(text.length);
 
   return tokens;
-}
-
-/** Незакрытая конструкция: её ещё набирают, конца у неё пока нет. */
-function isUnterminated(token: Token): boolean {
-  if (token.kind === 'modx-tag') {
-    return !token.value.endsWith(MODX_CLOSE);
-  }
-
-  if (token.kind === 'fenom-tag') {
-    return !token.value.endsWith('}');
-  }
-
-  return false;
 }
 
 /**
@@ -226,7 +227,7 @@ export function tokenAt(tokens: Token[], offset: number): Token | undefined {
       continue;
     }
 
-    if (offset > token.end || (offset === token.end && !isUnterminated(token))) {
+    if (offset > token.end || (offset === token.end && !token.unterminated)) {
       low = middle + 1;
       continue;
     }

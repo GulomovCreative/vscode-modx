@@ -97,6 +97,52 @@ const CompletionItemKind = new Proxy({}, { get: (_target, name) => String(name) 
 const CompletionItemTag = { Deprecated: 1 };
 const FileType = { Unknown: 0, File: 1, Directory: 2, SymbolicLink: 64 };
 
+class Disposable {
+  constructor(dispose) {
+    this.dispose = dispose ?? (() => {});
+  }
+
+  static from(...items) {
+    return new Disposable(() => items.forEach((item) => item.dispose?.()));
+  }
+}
+
+const DiagnosticSeverity = { Error: 0, Warning: 1, Information: 2, Hint: 3 };
+
+class Diagnostic {
+  constructor(range, message, severity) {
+    this.range = range;
+    this.message = message;
+    this.severity = severity;
+  }
+}
+
+// Событие в духе vscode.Event: подписка возвращает Disposable, а тест дёргает
+// fire(), чтобы проверить, что расширение на событие реагирует.
+function createEvent() {
+  const listeners = new Set();
+
+  const event = (listener) => {
+    listeners.add(listener);
+
+    return new Disposable(() => listeners.delete(listener));
+  };
+
+  event.fire = (value) => listeners.forEach((listener) => listener(value));
+
+  return event;
+}
+
+const events = {
+  didOpen: createEvent(),
+  didChange: createEvent(),
+  didClose: createEvent(),
+  didChangeConfiguration: createEvent(),
+};
+
+// Наборы диагностик, выставленные расширением: ключ — Uri документа.
+const diagnostics = new Map();
+
 // Провайдеры регистрируются при вызове activate(); стаб их запоминает, чтобы
 // тесты могли достать нужный и дёрнуть напрямую.
 const registrations = [];
@@ -118,6 +164,17 @@ const languages = {
     registrations.push({ kind: 'format-range', selector, provider, triggerCharacters: [] });
     return { dispose() {} };
   },
+  createDiagnosticCollection(name) {
+    registrations.push({ kind: 'diagnostics', selector: undefined, provider: undefined, triggerCharacters: [], name });
+
+    return {
+      name,
+      set: (uri, items) => diagnostics.set(uri.toString(), items),
+      delete: (uri) => diagnostics.delete(uri.toString()),
+      clear: () => diagnostics.clear(),
+      dispose: () => diagnostics.clear(),
+    };
+  },
 };
 
 // Настройки и файловая система подменяются из теста через setWorkspace().
@@ -134,6 +191,13 @@ function setWorkspace(state) {
 }
 
 const workspace = {
+  get textDocuments() {
+    return workspaceState.documents ?? [];
+  },
+  onDidOpenTextDocument: events.didOpen,
+  onDidChangeTextDocument: events.didChange,
+  onDidCloseTextDocument: events.didClose,
+  onDidChangeConfiguration: events.didChangeConfiguration,
   getConfiguration(section) {
     const values = workspaceState.configuration[section] || {};
     return { get: (key) => values[key] };
@@ -237,6 +301,9 @@ const l10n = {
 };
 
 module.exports = {
+  Diagnostic,
+  DiagnosticSeverity,
+  Disposable,
   CompletionItem,
   CompletionItemKind,
   CompletionItemTag,
@@ -256,6 +323,8 @@ module.exports = {
 
   // служебное, не часть API VS Code
   DEFAULT_WORD_PATTERN,
+  diagnostics,
+  events,
   registrations,
   setWorkspace,
 };

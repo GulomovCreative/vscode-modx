@@ -1,3 +1,7 @@
 {
-	"vscode-modx.elementsPath.description": "Directory with file elements to load via @FILE binding. Relative to the workspace root. Use `/`, `.`, or an empty value to browse from the project root."
+	"vscode-modx.elementsPath.description": "Directory with file elements to load via @FILE binding. Relative to the workspace root. Use `/`, `.`, or an empty value to browse from the project root.",
+	"vscode-modx.diagnostics.description": "Report structural problems in templates: constructs that are never closed, and unpaired tags.",
+	"vscode-modx.diagnostics.off": "Report nothing.",
+	"vscode-modx.diagnostics.unclosed": "Constructs that are never closed, and unpaired Fenom block tags.",
+	"vscode-modx.diagnostics.all": "The same, plus unpaired HTML elements. Useful on whole pages; a chunk that opens an element another chunk closes is reported as a problem."
 }
