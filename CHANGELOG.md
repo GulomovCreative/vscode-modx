@@ -6,6 +6,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- The Marketplace badges in the readme render again. shields.io retired its
+  Visual Studio Marketplace badges, and all three showed as "retired badge" on
+  the Marketplace page itself.
+
 ### Changed
 
 - Paths to template files are built as URIs from the workspace folder rather

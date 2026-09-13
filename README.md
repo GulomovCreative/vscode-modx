@@ -2,9 +2,9 @@
 
 Intelligent MODX, pdoTools and fenom tooling for VS Code.
 
-[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/gulomov.vscode-modx?label=marketplace&logo=visualstudiocode&logoColor=white&color=0066b8)](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/gulomov.vscode-modx?color=0066b8)](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx)
-[![Rating](https://img.shields.io/visual-studio-marketplace/stars/gulomov.vscode-modx?color=0066b8)](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx&ssr=false#review-details)
+[![Version](https://vsmarketplacebadges.dev/version/gulomov.vscode-modx.svg)](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx)
+[![Installs](https://vsmarketplacebadges.dev/installs/gulomov.vscode-modx.svg)](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx)
+[![Rating](https://vsmarketplacebadges.dev/rating/gulomov.vscode-modx.svg)](https://marketplace.visualstudio.com/items?itemName=gulomov.vscode-modx&ssr=false#review-details)
 [![CI](https://github.com/GulomovCreative/vscode-modx/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/GulomovCreative/vscode-modx/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/github/license/GulomovCreative/vscode-modx?color=44cc11)](LICENSE)
 
