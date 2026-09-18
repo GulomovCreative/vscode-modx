@@ -163,6 +163,16 @@ Directory the `@FILE` paths are resolved against, relative to the workspace root
 
 Set it to `/`, `.`, or an empty string to browse from the project root — useful when templates live outside `core`, or when the editor is opened on the theme directory rather than on the MODX installation.
 
+### `vscode-modx.diagnostics`
+
+Chooses how much structural reporting is shown in the Problems panel. Default: `unclosed`.
+
+```json
+"vscode-modx.diagnostics": "unclosed"
+```
+
+Set it to `off` to disable structural diagnostics, or to `all` to also report unpaired HTML elements.
+
 ## Recommended VS Code Settings
 
 ### `files.associations`
